@@ -13,6 +13,7 @@ import {
 import { ToastManager } from "../Toast/ToastManager";
 import { useChatDraftMessage } from "../AppData/useChatState";
 import { useEmojiPickerStyles } from "./useEmojiPickerStyles";
+import { useChatPlaceholder } from "./useChatRoleSelector";
 
 const TextArea = styled("textarea", {
   width: "100%",
@@ -72,6 +73,7 @@ export const ChatFooter = ({ role, peerId, onSend, children }) => {
   const hmsActions = useHMSActions();
   const inputRef = useRef(null);
   const [draftMessage, setDraftMessage] = useChatDraftMessage();
+  const placeholder = useChatPlaceholder();
 
   const sendMessage = useCallback(async () => {
     const message = inputRef.current.value;
@@ -80,7 +82,7 @@ export const ChatFooter = ({ role, peerId, onSend, children }) => {
     }
     try {
       if (role) {
-        await hmsActions.sendGroupMessage(message, [role]);
+        await Array.isArray(role)?hmsActions.sendGroupMessage(message, role):hmsActions.sendGroupMessage(message, [role]);
       } else if (peerId) {
         await hmsActions.sendDirectMessage(message, peerId);
       } else {
@@ -124,7 +126,7 @@ export const ChatFooter = ({ role, peerId, onSend, children }) => {
     >
       {children}
       <TextArea
-        placeholder="Write something here"
+        placeholder={placeholder}
         ref={inputRef}
         autoFocus
         css={{ fontSize: "1rem" }}

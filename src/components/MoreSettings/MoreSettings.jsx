@@ -80,6 +80,10 @@ export const MoreSettings = () => {
   const isSFNEnabled = useIsFeatureEnabled(FEATURE_LIST.STARTS_FOR_NERDS);
   const [openModals, setOpenModals] = useState(new Set());
   useDropdownList({ open: openModals.size > 0, name: "MoreSettings" });
+  const changeNameButtonRoleList =
+    process.env.REACT_APP_CHANGE_NAME_BUTTON_PERMISSION_ROLES;
+  const shouldShowChangeNameButton =
+    changeNameButtonRoleList.includes(localPeerRole);
 
   const updateState = (modalName, value) => {
     setOpenModals(modals => {
@@ -137,7 +141,7 @@ export const MoreSettings = () => {
               </Dropdown.Item>
             </>
           ) : null}
-          {isChangeNameEnabled && (
+          {shouldShowChangeNameButton && isChangeNameEnabled && (
             <Dropdown.Item
               css={{ "&:hover": { backgroundColor: "$surface_bright" } }}
               onClick={() => updateState(MODALS.CHANGE_NAME, true)}

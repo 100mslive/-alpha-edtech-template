@@ -16,6 +16,7 @@ import {
   useWidgetState,
 } from "../AppData/useUISettings";
 import { WIDGET_STATE, WIDGET_VIEWS } from "../../common/constants";
+import { useRecordingStreaming } from "@100mslive/react-sdk";
 
 export const Widgets = props => {
   const toggleWidget = useWidgetToggle();
@@ -23,6 +24,7 @@ export const Widgets = props => {
   const { showPolls } = useShowPolls();
   const { showWhiteboard } = useShowWhiteboard();
   const { showAudioShare } = useShowAudioShare();
+  const { isHLSRunning } = useRecordingStreaming();
 
   // const onClickShowPollData = () => {
   //   console.log("Show Poll Data");
@@ -30,8 +32,14 @@ export const Widgets = props => {
   // };
 
   const renderPollVoting = () => {
-    if (props.canShowPollWidget === true && widgetView === WIDGET_VIEWS.VOTE) {
-      return <Voting toggleVoting={toggleWidget} id={pollID} />;
+    if (widgetView === WIDGET_VIEWS.VOTE) {
+      if (isHLSRunning) {
+        if (props.canShowPollWidget) {
+          return <Voting toggleVoting={toggleWidget} id={pollID} />;
+        }
+      } else {
+        return <Voting toggleVoting={toggleWidget} id={pollID} />;
+      }
     }
   };
 
@@ -42,7 +50,7 @@ export const Widgets = props => {
         <Flex direction="column" css={{ p: "$10" }}>
           {(showWhiteboard || showAudioShare) && (
             <Flex css={{ gap: "$10", mb: "$12" }}>
-              {showAudioShare && <ScreenshareAudio/>}
+              {showAudioShare && <ScreenshareAudio />}
               {showWhiteboard && <ToggleWhiteboard />}
             </Flex>
           )}

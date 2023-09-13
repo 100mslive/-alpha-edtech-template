@@ -7,6 +7,7 @@ import {
   useHMSNotifications,
   useHMSStore,
   useHMSActions,
+  useRecordingStreaming,
 } from "@100mslive/react-sdk";
 import { Button } from "@100mslive/roomkit-react";
 import { ToastBatcher } from "../Toast/ToastBatcher";
@@ -38,6 +39,7 @@ export function Notifications() {
   const subscribedNotifications = useSubscribedNotifications() || {};
   const isHeadless = useIsHeadless();
   const toggleWidget = useWidgetToggle();
+  const { isHLSRunning } = useRecordingStreaming();
 
   useEffect(() => {
     if (!notification) {
@@ -167,24 +169,27 @@ export function Notifications() {
 
       case HMSNotificationTypes.POLL_STARTED:
         if (notification.data.startedBy !== localPeerID) {
-          hmsActions.setAppData("showPollWidget", false);
-          // ToastManager.addToast({
-          //   title: `A poll was started: ${notification.data.title}`,
-          //   action: (
-          //     <Button
-          //       onClick={() => toggleWidget(notification.data.id)}
-          //       variant="standard"
-          //       css={{
-          //         backgroundColor: "$surface_bright",
-          //         fontWeight: "$semiBold",
-          //         color: "$on_surface_high",
-          //         p: "$xs $md",
-          //       }}
-          //     >
-          //       Vote
-          //     </Button>
-          //   ),
-          // });
+          if (isHLSRunning) {
+            hmsActions.setAppData("showPollWidget", false);
+          } else {
+            ToastManager.addToast({
+              title: `A poll was started: ${notification.data.title}`,
+              action: (
+                <Button
+                  onClick={() => toggleWidget(notification.data.id)}
+                  variant="standard"
+                  css={{
+                    backgroundColor: "$surface_bright",
+                    fontWeight: "$semiBold",
+                    color: "$on_surface_high",
+                    p: "$xs $md",
+                  }}
+                >
+                  Vote
+                </Button>
+              ),
+            });
+          }
         }
 
         break;
