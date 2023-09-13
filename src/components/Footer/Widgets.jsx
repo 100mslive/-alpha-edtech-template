@@ -16,7 +16,11 @@ import {
   useWidgetState,
 } from "../AppData/useUISettings";
 import { WIDGET_STATE, WIDGET_VIEWS } from "../../common/constants";
-import { useRecordingStreaming } from "@100mslive/react-sdk";
+import {
+  useHMSStore,
+  useRecordingStreaming,
+  selectLocalPeerRoleName,
+} from "@100mslive/react-sdk";
 
 export const Widgets = props => {
   const toggleWidget = useWidgetToggle();
@@ -25,6 +29,9 @@ export const Widgets = props => {
   const { showWhiteboard } = useShowWhiteboard();
   const { showAudioShare } = useShowAudioShare();
   const { isHLSRunning } = useRecordingStreaming();
+  const localPeerRole = useHMSStore(selectLocalPeerRoleName);
+  const hlsViewerRoleList = process.env.REACT_APP_HLS_VIEWER_ROLES;
+  const isHLSLiveStreamViewer = hlsViewerRoleList.includes(localPeerRole);
 
   // const onClickShowPollData = () => {
   //   console.log("Show Poll Data");
@@ -33,7 +40,7 @@ export const Widgets = props => {
 
   const renderPollVoting = () => {
     if (widgetView === WIDGET_VIEWS.VOTE) {
-      if (isHLSRunning) {
+      if (isHLSLiveStreamViewer && isHLSRunning) {
         if (props.canShowPollWidget) {
           return <Voting toggleVoting={toggleWidget} id={pollID} />;
         }
