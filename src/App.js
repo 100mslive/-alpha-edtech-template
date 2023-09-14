@@ -27,6 +27,7 @@ import { palette } from "./theme.js";
 import { Confetti } from "./plugins/confetti";
 import { FlyingEmoji } from "./plugins/FlyingEmoji.jsx";
 import { RemoteStopScreenshare } from "./plugins/RemoteStopScreenshare";
+import { Whiteboard } from "./plugins/whiteboard/Whiteboard.jsx";
 import { getRoutePrefix, shadeColor } from "./common/utils";
 import { FeatureFlags } from "./services/FeatureFlags";
 
@@ -151,8 +152,23 @@ const RedirectToPreview = ({ getDetails }) => {
 };
 
 const RouteList = ({ getDetails, authTokenByRoomCodeEndpoint }) => {
+  const { roomId } = useParams();
+  useEffect(() => {
+    getDetails();
+  }, [roomId]); //eslint-disable-line
+
   return (
     <Routes>
+      <Route path="whiteboard">
+        <Route
+          path=":roomId/:role"
+          element={
+            <Suspense fallback={<FullPageProgress />}>
+              <Whiteboard roomId={roomId} />
+            </Suspense>
+          }
+        />
+      </Route>
       <Route path="preview">
         <Route
           path=":roomId/:role"
