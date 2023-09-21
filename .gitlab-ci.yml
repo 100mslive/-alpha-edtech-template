@@ -1,0 +1,95 @@
+stages:
+  - build
+  - dockerize
+  - deploy
+
+variables:
+  KUBEFOLDER: /root/.kube
+
+build:
+  image: node:18-alpine
+  stage: build
+  artifacts:
+    paths:
+      - app
+    expire_in: 1 week
+  only:
+    - devops_additoon
+    - stage
+    - production
+  script:
+    - unset CI
+    - yarn
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "production" ]]
+      then
+        mv .env.production .env.production
+      elif [[ "$CI_COMMIT_BRANCH" == "stage" ]]
+      then
+        mv .env.stage .env.production
+      elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
+      then
+        mv .env .env.production
+      else
+        echo "Not Listed Branch for Deployment"
+      fi
+
+    - yarn codegen:public && yarn codegen:apito
+    - yarn build
+    - mkdir -p /builds/$CI_PROJECT_PATH/app
+    - mv src /builds/$CI_PROJECT_PATH/app
+    - mv public /builds/$CI_PROJECT_PATH/app
+    - mv app.json /builds/$CI_PROJECT_PATH/app
+    - mv postcss.config.js /builds/$CI_PROJECT_PATH/app
+    - mv package.json /builds/$CI_PROJECT_PATH/app
+    - mv node_modules /builds/$CI_PROJECT_PATH/app
+    - ls -la /builds/$CI_PROJECT_PATH/app
+
+dockerize:
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+  services:
+    - docker:18-dind
+  stage: dockerize
+  only:
+    - devops_additoon
+    - stage
+    - production
+  image: docker:18
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH .
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-$CI_COMMIT_BRANCH
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-$CI_COMMIT_BRANCH
+
+deploy:
+  image: fahim74/alpine-kubectl-helm
+  stage: deploy
+  only:
+    - devops_additoon
+    - stage
+    - production
+  before_script:
+    - if [ -d "${KUBEFOLDER}" ]; then rm -Rf $KUBEFOLDER; fi
+    - mkdir $KUBEFOLDER
+    - cat $KUBECONFIG > "${KUBEFOLDER}/config"
+  script:
+    - echo "Initiating Application Deployment"
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "production" ]]
+      then
+        helm -n production upgrade --install --values=helm/values-production.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+      elif [[ "$CI_COMMIT_BRANCH" == "stage" ]]
+      then
+        helm -n stage upgrade --install --values=helm/values-stage.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+      elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
+      then
+        helm -n devops_additoon upgrade --install --values=helm/values-develop.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+      else
+        echo "Not Listed Branch for Deployment"
+      fi
+    - echo "Application Deployment Completed"
+  after_script:
+    - if [ -d "${KUBEFOLDER}" ]; then rm -Rf $KUBEFOLDER; fi
+
