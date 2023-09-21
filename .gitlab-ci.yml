@@ -85,7 +85,7 @@ deploy:
         helm -n stage upgrade --install --values=helm/values-stage.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
       elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
       then
-        helm -n devops_additoon upgrade --install --values=helm/values-develop.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+        helm -n develop upgrade --install --values=helm/values-develop.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
       else
         echo "Not Listed Branch for Deployment"
       fi
