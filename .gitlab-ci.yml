@@ -29,7 +29,7 @@ build:
         mv .env.stage .env.production
       elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
       then
-        mv .env .env.production
+        mv .env .env
       else
         echo "Not Listed Branch for Deployment"
       fi
