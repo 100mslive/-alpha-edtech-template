@@ -79,13 +79,13 @@ deploy:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "production" ]]
       then
-        helm -n production upgrade --install --values=helm/values-production.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+        helm -n production upgrade --install --values=helm/values-production.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH 100ms-live-app ./helm
       elif [[ "$CI_COMMIT_BRANCH" == "stage" ]]
       then
-        helm -n stage upgrade --install --values=helm/values-stage.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+        helm -n stage upgrade --install --values=helm/values-stage.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH 100ms-live-app ./helm
       elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
       then
-        helm -n develop upgrade --install --values=helm/values-develop.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH website-v3 ./helm
+        helm -n develop upgrade --install --values=helm/values-develop.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH 100ms-live-app ./helm
       else
         echo "Not Listed Branch for Deployment"
       fi
