@@ -14,7 +14,7 @@ build:
       - app
     expire_in: 1 week
   only:
-    - devops_additoon
+    - develop
     - stage
     - production
   script:
@@ -42,7 +42,7 @@ dockerize:
     - docker:18-dind
   stage: dockerize
   only:
-    - devops_additoon
+    - develop
     - stage
     - production
   image: docker:18
@@ -57,7 +57,7 @@ deploy:
   image: fahim74/alpine-kubectl-helm
   stage: deploy
   only:
-    - devops_additoon
+    - develop
     - stage
     - production
   before_script:
@@ -73,7 +73,7 @@ deploy:
       elif [[ "$CI_COMMIT_BRANCH" == "stage" ]]
       then
         helm -n stage upgrade --install --values=helm/values-stage.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH 100ms-live-app ./helm
-      elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
+      elif [[ "$CI_COMMIT_BRANCH" == "develop" ]]
       then
         helm -n develop upgrade --install --values=helm/values-develop.yaml --set image.tag=$CI_COMMIT_SHA-$CI_COMMIT_BRANCH 100ms-live-app ./helm
       else
