@@ -1,0 +1,41 @@
+namespace: "develop"
+
+labels:
+    app: 100ms-live-app
+    tier: frontend
+    enabled: "true"
+
+replicaCount: 1
+minReplicas: 1
+maxReplicas: 6
+
+image:
+    repository: "registry.gitlab.com/shikho/frontend/100ms-live-app"
+    pullPolicy: Always
+    tag: "develop"
+    resources:
+        requests:
+            memory: "1Gi"
+            cpu: ".2"
+#        limits:
+#            memory: ".5Gi"
+#            cpu: "1"
+
+service:
+    type: NodePort
+    port: 7490
+    targetPort: 7490
+
+hpa:
+    -   type: Resource
+        resource:
+            name: cpu
+            target:
+                type: Utilization
+                averageUtilization: 80
+    -   type: Resource
+        resource:
+            name: memory
+            target:
+                type: Utilization
+                averageUtilization: 80

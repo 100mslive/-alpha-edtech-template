@@ -1,0 +1,14 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+    namespace: {{ .Values.namespace }}
+    name: "{{ .Chart.Name }}-hpa"
+spec:
+    scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: {{ .Chart.Name }}
+    minReplicas: {{ .Values.minReplicas }} 
+    maxReplicas: {{ .Values.maxReplicas }} 
+    metrics:
+        {{- toYaml .Values.hpa | nindent 8 }}
