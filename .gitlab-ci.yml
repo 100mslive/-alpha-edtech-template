@@ -20,24 +20,12 @@ build:
   script:
     - unset CI
     - yarn
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "production" ]]
-      then
-        mv .env.production .env.production
-      elif [[ "$CI_COMMIT_BRANCH" == "stage" ]]
-      then
-        mv .env.stage .env.production
-      elif [[ "$CI_COMMIT_BRANCH" == "devops_additoon" ]]
-      then
-        mv .env .env.production
-      else
-        echo "Not Listed Branch for Deployment"
-      fi
-
+  
     - yarn codegen:public && yarn codegen:apito
     - yarn build
     - mkdir -p /builds/$CI_PROJECT_PATH/app
     - mv src /builds/$CI_PROJECT_PATH/app
+    - mv .env /builds/$CI_PROJECT_PATH/app
     - mv build /builds/$CI_PROJECT_PATH/app
     - mv public /builds/$CI_PROJECT_PATH/app
     - mv app.json /builds/$CI_PROJECT_PATH/app
