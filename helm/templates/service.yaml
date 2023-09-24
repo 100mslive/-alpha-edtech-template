@@ -4,7 +4,7 @@ metadata:
     labels:
         {{- toYaml .Values.labels | nindent 8 }}
     namespace: {{ .Values.namespace }}
-    name: "{{ .Chart.Name }}-service"
+    name: "s-{{ .Chart.Name }}-service"
 spec:
     ports:
     -   port: {{ .Values.service.port }} 
