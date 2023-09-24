@@ -3,12 +3,16 @@ FROM node:18-alpine
 
 
 
-EXPOSE 7490
+
 ENV WEB_PORT=7490
 
 COPY app /usr/app
 WORKDIR /usr/app
 
+RUN npm install -g serve
+CMD serve -p 7490 build
 
-CMD yarn start -p $WEB_PORT
+EXPOSE 7490
+
+
 

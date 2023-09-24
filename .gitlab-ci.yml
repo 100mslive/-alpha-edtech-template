@@ -38,6 +38,7 @@ build:
     - yarn build
     - mkdir -p /builds/$CI_PROJECT_PATH/app
     - mv src /builds/$CI_PROJECT_PATH/app
+    - mv build /builds/$CI_PROJECT_PATH/app
     - mv public /builds/$CI_PROJECT_PATH/app
     - mv app.json /builds/$CI_PROJECT_PATH/app
     - mv postcss.config.js /builds/$CI_PROJECT_PATH/app
