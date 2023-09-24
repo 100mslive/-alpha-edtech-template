@@ -20,8 +20,6 @@ build:
   script:
     - unset CI
     - yarn
-  
-    - yarn codegen:public && yarn codegen:apito
     - yarn build
     - mkdir -p /builds/$CI_PROJECT_PATH/app
     - mv src /builds/$CI_PROJECT_PATH/app
@@ -31,6 +29,8 @@ build:
     - mv public /builds/$CI_PROJECT_PATH/app
     - mv app.json /builds/$CI_PROJECT_PATH/app
     - mv postcss.config.js /builds/$CI_PROJECT_PATH/app
+    - mv .prettierrc /builds/$CI_PROJECT_PATH/app
+    - mv .eslintrc /builds/$CI_PROJECT_PATH/app
     - mv package.json /builds/$CI_PROJECT_PATH/app
     - mv node_modules /builds/$CI_PROJECT_PATH/app
     - ls -la /builds/$CI_PROJECT_PATH/app
