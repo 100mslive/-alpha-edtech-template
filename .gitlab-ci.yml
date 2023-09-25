@@ -1,39 +1,10 @@
 stages:
-  - build
   - dockerize
   - deploy
 
 variables:
   KUBEFOLDER: /root/.kube
 
-build:
-  image: node:18-alpine
-  stage: build
-  artifacts:
-    paths:
-      - app
-    expire_in: 1 week
-  only:
-    - develop
-    - stage
-    - production
-  script:
-    - unset CI
-    - yarn
-    - yarn build
-    - mkdir -p /builds/$CI_PROJECT_PATH/app
-    - mv src /builds/$CI_PROJECT_PATH/app
-    - mv .env /builds/$CI_PROJECT_PATH/app
-    - mv build /builds/$CI_PROJECT_PATH/app
-    - mv webpack.config.js /builds/$CI_PROJECT_PATH/app
-    - mv public /builds/$CI_PROJECT_PATH/app
-    - mv app.json /builds/$CI_PROJECT_PATH/app
-    - mv postcss.config.js /builds/$CI_PROJECT_PATH/app
-    - mv .prettierrc /builds/$CI_PROJECT_PATH/app
-    - mv .eslintrc /builds/$CI_PROJECT_PATH/app
-    - mv package.json /builds/$CI_PROJECT_PATH/app
-    - mv node_modules /builds/$CI_PROJECT_PATH/app
-    - ls -la /builds/$CI_PROJECT_PATH/app
 
 dockerize:
   variables:
