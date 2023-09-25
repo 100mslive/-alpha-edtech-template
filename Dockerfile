@@ -6,8 +6,10 @@ FROM node:18-alpine AS builder
 
 ENV WEB_PORT=7490
 ENV PORT=7490
-COPY app /100ms-web
 WORKDIR /100ms-web
+
+# Copy app files
+COPY . .
 
 
 
