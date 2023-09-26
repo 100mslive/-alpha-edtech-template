@@ -8,6 +8,7 @@ import {
   useHMSStore,
   useHMSActions,
   useRecordingStreaming,
+  selectLocalPeerRoleName,
 } from "@100mslive/react-sdk";
 import { Button } from "@100mslive/roomkit-react";
 import { ToastBatcher } from "../Toast/ToastBatcher";
@@ -40,6 +41,9 @@ export function Notifications() {
   const isHeadless = useIsHeadless();
   const toggleWidget = useWidgetToggle();
   const { isHLSRunning } = useRecordingStreaming();
+  const localPeerRole = useHMSStore(selectLocalPeerRoleName);
+  const hlsViewerRoleList = process.env.REACT_APP_HLS_VIEWER_ROLES;
+  const isHLSLiveStreamViewer = hlsViewerRoleList.includes(localPeerRole);
 
   useEffect(() => {
     if (!notification) {
@@ -169,7 +173,7 @@ export function Notifications() {
 
       case HMSNotificationTypes.POLL_STARTED:
         if (notification.data.startedBy !== localPeerID) {
-          if (isHLSRunning) {
+          if (isHLSLiveStreamViewer && isHLSRunning) {
             hmsActions.setAppData("showPollWidget", false);
           } else {
             ToastManager.addToast({
