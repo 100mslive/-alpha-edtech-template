@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        {{- toYaml .Values.labels | nindent 8 }}
+    namespace: {{ .Values.namespace }}
+    name: "s-{{ .Chart.Name }}-service"
+spec:
+    ports:
+    -   port: {{ .Values.service.port }} 
+        protocol: TCP
+        targetPort: {{ .Values.service.targetPort }} 
+    selector:
+        {{- toYaml .Values.labels | nindent 8 }}
+    type: {{ .Values.service.type }}

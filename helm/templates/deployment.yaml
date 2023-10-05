@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    labels:
+        {{- toYaml .Values.labels | nindent 8 }}
+    annotations:
+        ad.datadoghq.com/{{ .Chart.Name }}.logs: '[{"source":"cms","service":"{{ .Chart.Name }}-{{ .Values.namespace }}"}]'
+    namespace: {{ .Values.namespace }}
+    name: {{ .Chart.Name }}
+spec:
+    replicas: {{ .Values.replicaCount }}
+    selector:
+        matchLabels:
+            {{- toYaml .Values.labels | nindent 12 }}
+    template:
+        metadata:
+            labels:
+                {{- toYaml .Values.labels | nindent 16 }}
+        spec:
+            {{- if or (eq .Values.namespace  "develop")  (eq .Values.namespace "stage" ) }}
+            affinity:
+                nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        -   matchExpressions:
+                            -   key: app-deployment
+                                operator: In
+                                values: 
+                                - disable   
+                            -   key: node-type
+                                operator: In
+                                values: 
+                                - spot-instance
+            tolerations:
+            -   key: app-deployment
+                operator: Equal
+                value: disable
+                effect: NoSchedule
+            -   key: node-type
+                operator: Equal
+                value: spot-instance
+                effect: NoSchedule
+            {{- end }}
+            imagePullSecrets:
+            -   name: gitlab-token
+            containers:
+            -   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+                name: {{ .Chart.Name }}
+                imagePullPolicy: {{ .Values.image.pullPolicy }}
+                resources:
+                    {{- toYaml .Values.image.resources | nindent 20 }}
+                ports:
+                -   containerPort: {{ .Values.service.targetPort }} 
+                env:
+                -   name: WEB_PORT
+                    value: "7490"
