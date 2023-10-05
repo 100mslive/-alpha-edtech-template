@@ -35,6 +35,7 @@ const PreviewScreen = React.memo(({ authTokenByRoomCodeEndpoint }) => {
   const navigate = useNavigation();
   const hmsActions = useHMSActions();
   const tokenEndpoint = useTokenEndpoint();
+  console.log("endpoint", tokenEndpoint);
   const [, setIsHeadless] = useSetUiSettings(UI_SETTINGS.isHeadless);
   const { roomId: urlRoomId, role: userRole } = useParams(); // from the url
   const [token, setToken] = useState(null);
