@@ -29,23 +29,23 @@ function ErrorPage({ error }) {
             direction="column"
             css={{ position: "absolute", size: "100%", top: "33.33%", left: 0 }}
           >
-            <Text variant="h3">Almost There!</Text>
+            <Text variant="h3">শিখো ডিজিটাল ক্লাসরুম</Text>
             <Text
               variant="body1"
               css={{ margin: "1.75rem", textAlign: "center" }}
             >
               {
-                "Hi there! thanks for trying us out, there is not much here yet. Let's get you all setup to join a meeting. "
+                "আপনি এখানে হয়তো পথভ্রষ্ট হয়ে চলে এসেছেন! মিটিং রুমের জন্য শিখো সাপোর্টে কল করুন । অথবা "
               }
               <a
-                href={CREATE_ROOM_DOC_URL}
+                href={"https://app.shikho.dev"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "underline" }}
               >
-                Click here
+                এখানে ক্লিক করে
               </a>{" "}
-              for next steps
+              অ্যাপ এ ফেরত যান;
             </Text>
           </Flex>
         ) : (
