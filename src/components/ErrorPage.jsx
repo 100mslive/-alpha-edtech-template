@@ -1,9 +1,20 @@
 import React from "react";
-import { Box, Flex, Text, useTheme } from "@100mslive/roomkit-react";
+import {Box, Flex, styled, Text, useTheme} from "@100mslive/roomkit-react";
 import { CREATE_ROOM_DOC_URL } from "../common/constants";
+import {useLogo} from "./AppData/useUISettings";
+
+const LogoImg = styled("img", {
+    maxHeight: "$250",
+    p: "$2",
+    w: "auto",
+    "@md": {
+        maxHeight: "$12",
+    },
+});
 
 function ErrorPage({ error }) {
   const themeType = useTheme().themeType;
+    const logo = useLogo();
   return (
     <Flex
       align="center"
@@ -29,13 +40,25 @@ function ErrorPage({ error }) {
             direction="column"
             css={{ position: "absolute", size: "100%", top: "33.33%", left: 0 }}
           >
+              <LogoImg
+                  src={
+                      logo ||
+                      (themeType === "dark"
+                              ? process.env.REACT_APP_LOGO_LIGHT
+                              : process.env.REACT_APP_LOGO_LIGHT
+                      )}
+                  alt="Brand Logo"
+                  width={550}
+                  height={100}
+              />
+              <br />
             <Text variant="h3">শিখো ডিজিটাল ক্লাসরুম</Text>
             <Text
               variant="body1"
               css={{ margin: "1.75rem", textAlign: "center" }}
             >
               {
-                "আপনি এখানে হয়তো পথভ্রষ্ট হয়ে চলে এসেছেন! মিটিং রুমের জন্য শিখো সাপোর্টে কল করুন । অথবা "
+                "আপনি মিটিং রুম থেকে বাইরে চলে এসেছেন । অ্যাপে ফেরত যেতে "
               }
               <a
                 href={"https://app.shikho.dev"}
@@ -43,9 +66,8 @@ function ErrorPage({ error }) {
                 rel="noopener noreferrer"
                 style={{ textDecoration: "underline" }}
               >
-                এখানে ক্লিক করে
-              </a>{" "}
-              অ্যাপ এ ফেরত যান;
+                এখানে ক্লিক করুন ।
+              </a>
             </Text>
           </Flex>
         ) : (

@@ -43,11 +43,11 @@ export const SpeakerTag = () => {
 };
 
 const LogoImg = styled("img", {
-  maxHeight: "$14",
+  maxHeight: "$28",
   p: "$2",
   w: "auto",
   "@md": {
-    maxHeight: "$12",
+    maxHeight: "$24",
   },
 });
 
@@ -69,8 +69,8 @@ export const Logo = () => {
           : process.env.REACT_APP_LOGO_LIGHT
       )}
       alt="Brand Logo"
-      width={132}
-      height={40}
+      width={232}
+      height={60}
     />
   );
 };

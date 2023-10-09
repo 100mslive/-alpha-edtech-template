@@ -2,13 +2,15 @@ import React from "react";
 import { Button, Input, styled } from "@100mslive/roomkit-react";
 import { isStreamingKit } from "../../common/utils";
 
-const PreviewName = ({ name, onChange, onJoin, enableJoin }) => {
+const PreviewName = ({ name, onChange, onJoin, enableJoin, disabled, hideInput  }) => {
   const formSubmit = e => {
     e.preventDefault();
   };
   return (
     <Form onSubmit={formSubmit}>
+        {!hideInput ?
       <Input
+          disabled={disabled}
         required
         id="name"
         css={{ w: "100%" }}
@@ -17,7 +19,7 @@ const PreviewName = ({ name, onChange, onJoin, enableJoin }) => {
         placeholder="Enter your name"
         autoFocus
         autoComplete="name"
-      />
+      /> : null }
       <Button type="submit" disabled={!name || !enableJoin} onClick={onJoin}>
         {isStreamingKit() ? "Join Studio" : "Join Room"}
       </Button>

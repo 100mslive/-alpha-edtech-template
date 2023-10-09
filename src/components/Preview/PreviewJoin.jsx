@@ -28,11 +28,20 @@ import TileConnection from "../Connection/TileConnection";
 import SettingsModal from "../Settings/SettingsModal";
 import PreviewName from "./PreviewName";
 import {VirtualBackground} from "../../plugins/VirtualBackground/VirtualBackground";
-import {useUISettings} from "../AppData/useUISettings";
+import {useLogo, useUISettings} from "../AppData/useUISettings";
 import {defaultPreviewPreference, UserPreferencesKeys, useUserPreferences,} from "../hooks/useUserPreferences";
 import {UI_SETTINGS} from "../../common/constants";
-import {decodeToken, getACookie} from "../../common/jwt";
+import {decodeToken, getACookie, getLoggedInUser} from "../../common/jwt";
 import {ToastManager} from "../Toast/ToastManager";
+
+const LogoImg = styled("img", {
+    maxHeight: "$14",
+    p: "$2",
+    w: "auto",
+    "@md": {
+        maxHeight: "$12",
+    },
+});
 
 const PreviewJoin = ({
                          token,
@@ -46,6 +55,8 @@ const PreviewJoin = ({
     //console.log("100ms token", systemToken)
     const shikhoToken = decodeToken(getACookie('token'));
     //console.log("shikho token", shikhoToken)
+    const loggedInUser = getLoggedInUser();
+    console.log("logged in user", loggedInUser);
     const [previewPreference, setPreviewPreference] = useUserPreferences(
         UserPreferencesKeys.PREVIEW,
         defaultPreviewPreference
@@ -91,6 +102,11 @@ const PreviewJoin = ({
             if (skipPreview) {
                 savePreferenceAndJoin();
             } else {
+                if (shikhoToken?.role === "student") {
+                    setName(loggedInUser?.first_name + "_" + loggedInUser?.phone.slice(loggedInUser?.phone.length - 4));
+                }else {
+                    setName(loggedInUser?.first_name);
+                }
                 preview();
             }
         }
@@ -137,7 +153,9 @@ const PreviewJoin = ({
                         />
                         <PreviewName
                             name={name}
-                            onChange={setName}
+                            //onChange={setName}
+                            hideInput={ systemToken?.role === "hls-viewer" ? true : false }
+                            disabled={false}
                             enableJoin={enableJoin}
                             onJoin={savePreferenceAndJoin}
                         />
