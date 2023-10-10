@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useSearchParam } from "react-use";
 import { v4 as uuid } from "uuid";
 import { useHMSActions } from "@100mslive/react-sdk";
@@ -42,6 +42,8 @@ const PreviewScreen = React.memo(({ authTokenByRoomCodeEndpoint }) => {
   // way to skip preview for automated tests, beam recording and streaming
   const beamInToken = useSearchParam("token") === "beam_recording"; // old format to remove
   let skipPreview = useSearchParam(QUERY_PARAM_SKIP_PREVIEW) === "true";
+  const [queryParameters] = useSearchParams();
+  const userId = queryParameters.get("userId");
   // use this field to join directly for quick testing while in local
   const directJoinHeadfulFromEnv =
     process.env.REACT_APP_HEADLESS_JOIN === "true";
@@ -66,10 +68,10 @@ const PreviewScreen = React.memo(({ authTokenByRoomCodeEndpoint }) => {
     const getTokenFn = roomCode
       ? () =>
           hmsActions.getAuthTokenByRoomCode(
-            { roomCode },
+            { roomCode, userId },
             { endpoint: authTokenByRoomCodeEndpoint }
           )
-      : () => getToken(tokenEndpoint, uuid(), userRole, urlRoomId);
+      : () => getToken(tokenEndpoint, userId || uuid(), userRole, urlRoomId);
 
     getTokenFn()
       .then(token => {
