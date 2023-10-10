@@ -6,12 +6,7 @@ import {
   Routes,
   useParams,
 } from "react-router-dom";
-import {
-  HMSRoomProvider,
-  selectIsConnectedToRoom,
-  useHMSActions,
-  useHMSStore,
-} from "@100mslive/react-sdk";
+import { HMSRoomProvider } from "@100mslive/react-sdk";
 import { Box, globalStyles, HMSThemeProvider } from "@100mslive/roomkit-react";
 import { AppData } from "./components/AppData/AppData.jsx";
 import { BeamSpeakerLabelsLogging } from "./components/AudioLevel/BeamSpeakerLabelsLogging";
@@ -210,29 +205,12 @@ const RouteList = ({ getDetails, authTokenByRoomCodeEndpoint }) => {
   );
 };
 
-const BackSwipe = () => {
-  const isConnectedToRoom = useHMSStore(selectIsConnectedToRoom);
-  const hmsActions = useHMSActions();
-  useEffect(() => {
-    const onRouteLeave = async () => {
-      if (isConnectedToRoom) {
-        await hmsActions.leave();
-      }
-    };
-    window.addEventListener("popstate", onRouteLeave);
-    return () => {
-      window.removeEventListener("popstate", onRouteLeave);
-    };
-  }, [hmsActions, isConnectedToRoom]);
-  return null;
-};
-
 function AppRoutes({ getDetails, authTokenByRoomCodeEndpoint }) {
   return (
     <Router>
       <ToastContainer />
       <Notifications />
-      <BackSwipe />
+      {/* <BackSwipe /> */}
       <Confetti />
       <FlyingEmoji />
       <RemoteStopScreenshare />
