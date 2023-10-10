@@ -117,11 +117,6 @@ const PreviewJoin = ({
       >
         Setup your audio and video before joining
       </Text>
-
-      {
-        // Shows the user id passed as Search Params on Preview Screen
-        /* <Text>{userId}</Text> */
-      }
       <Flex
         align="center"
         justify="center"
