@@ -205,12 +205,29 @@ const RouteList = ({ getDetails, authTokenByRoomCodeEndpoint }) => {
   );
 };
 
+const BackSwipe = () => {
+  const isConnectedToRoom = useHMSStore(selectIsConnectedToRoom);
+  const hmsActions = useHMSActions();
+  useEffect(() => {
+    const onRouteLeave = async () => {
+      if (isConnectedToRoom) {
+        await hmsActions.leave();
+      }
+    };
+    window.addEventListener("popstate", onRouteLeave);
+    return () => {
+      window.removeEventListener("popstate", onRouteLeave);
+    };
+  }, [hmsActions, isConnectedToRoom]);
+  return null;
+};
+
 function AppRoutes({ getDetails, authTokenByRoomCodeEndpoint }) {
   return (
     <Router>
       <ToastContainer />
       <Notifications />
-      {/* <BackSwipe /> */}
+      <BackSwipe />
       <Confetti />
       <FlyingEmoji />
       <RemoteStopScreenshare />
