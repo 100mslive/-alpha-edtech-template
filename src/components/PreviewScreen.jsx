@@ -71,7 +71,7 @@ const PreviewScreen = React.memo(({ authTokenByRoomCodeEndpoint }) => {
             { roomCode, userId },
             { endpoint: authTokenByRoomCodeEndpoint }
           )
-      : () => getToken(tokenEndpoint, userId ?? uuid(), userRole, urlRoomId);
+      : () => getToken(tokenEndpoint, userId || uuid(), userRole, urlRoomId);
 
     getTokenFn()
       .then(token => {
@@ -123,7 +123,6 @@ const PreviewScreen = React.memo(({ authTokenByRoomCodeEndpoint }) => {
               onJoin={onJoin}
               token={token}
               asRole={previewAsRole}
-              userId={userId}
             />
           </>
         ) : (

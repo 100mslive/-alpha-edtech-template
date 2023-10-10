@@ -42,7 +42,6 @@ const PreviewJoin = ({
   skipPreview,
   initialName,
   asRole,
-  userId,
 }) => {
   const [previewPreference, setPreviewPreference] = useUserPreferences(
     UserPreferencesKeys.PREVIEW,

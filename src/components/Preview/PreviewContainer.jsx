@@ -9,7 +9,6 @@ const PreviewContainer = ({
   skipPreview,
   initialName,
   asRole,
-  userId,
 }) => {
   return (
     <Container>
@@ -20,7 +19,6 @@ const PreviewContainer = ({
         onJoin={onJoin}
         token={token}
         asRole={asRole}
-        userId={userId}
       />
     </Container>
   );
