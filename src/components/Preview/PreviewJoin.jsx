@@ -154,7 +154,7 @@ const PreviewJoin = ({
                         <PreviewName
                             name={name}
                             //onChange={setName}
-                            hideInput={ systemToken?.role === "hls-viewer" ? true : false }
+                            hideInput={ systemToken?.role === "hls-viewer" }
                             disabled={false}
                             enableJoin={enableJoin}
                             onJoin={savePreferenceAndJoin}
