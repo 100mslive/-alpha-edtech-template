@@ -114,7 +114,7 @@ const PreviewJoin = ({
     }, [token, skipPreview]);
     return (
         <Container>
-            {((shikhoToken?.role === "teacher" && systemToken?.role === "teacher") || (shikhoToken?.role === "student" && (systemToken?.role === "hls-viewer" || systemToken?.role === "student-on-stage"))) ?
+            {(systemToken?.role === "custom-internal-hls" || (shikhoToken?.role === "teacher" && systemToken?.role === "teacher") || (shikhoToken?.role === "student" && (systemToken?.role === "hls-viewer" || systemToken?.role === "block-chat" || systemToken?.role === "student-on-stage"))) ?
                 <>
                     <Text
                         variant="h4"
