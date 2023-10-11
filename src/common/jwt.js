@@ -14,7 +14,11 @@ export const decodeToken = key => {
 };
 
 export const getLoggedInUser = () => {
-  return JSON.parse(getACookie("user"));
+  const user = getACookie("user");
+  if (user !== "") {
+    return JSON.parse(user);
+  }
+  return {};
 };
 
 export const setACookie = (key, value) => {

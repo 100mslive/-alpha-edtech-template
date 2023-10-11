@@ -162,7 +162,7 @@ const StartHLS = () => {
         setError("");
         await hmsActions.startHLSStreaming({
           // This will fail in local dev
-          variants:[{meetingURL:`https://live.shikho.dev/preview/${roomId}/custom-internal-hls?skip_preview=true`}],
+          variants:[{meetingURL:`${window.location.origin}/preview/${roomId}/custom-internal-hls?skip_preview=true`}],
           recording: { hlsVod: record, singleFilePerLayer: record },
         });
       } catch (error) {

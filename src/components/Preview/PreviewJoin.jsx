@@ -56,7 +56,7 @@ const PreviewJoin = ({
     const shikhoToken = decodeToken(getACookie('token'));
     //console.log("shikho token", shikhoToken)
     const loggedInUser = getLoggedInUser();
-    console.log("logged in user", loggedInUser);
+    //console.log("logged in user", loggedInUser);
     const [previewPreference, setPreviewPreference] = useUserPreferences(
         UserPreferencesKeys.PREVIEW,
         defaultPreviewPreference
@@ -102,16 +102,15 @@ const PreviewJoin = ({
             if (skipPreview) {
                 savePreferenceAndJoin();
             } else {
-                if (shikhoToken?.role === "student") {
-                    setName(loggedInUser?.first_name + "_" + loggedInUser?.phone.slice(loggedInUser?.phone.length - 4));
-                }else {
-                    setName(loggedInUser?.first_name);
+                if (shikhoToken?.role === "student" || shikhoToken?.role === "teacher") {
+                    const name = loggedInUser?.first_name + "_" + loggedInUser?.phone?.slice(loggedInUser?.phone?.length - 4);
+                    setName(name);
                 }
                 preview();
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token, skipPreview]);
+    }, [token, skipPreview, shikhoToken, loggedInUser]);
     return (
         <Container>
             {(systemToken?.role === "custom-internal-hls" || (shikhoToken?.role === "teacher" && systemToken?.role === "teacher") || (shikhoToken?.role === "student" && (systemToken?.role === "hls-viewer" || systemToken?.role === "block-chat" || systemToken?.role === "student-on-stage"))) ?
