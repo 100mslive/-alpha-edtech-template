@@ -14,6 +14,7 @@ import { Container } from "../../Streaming/Common";
 import { StandardView } from "./StandardVoting";
 import { TimedView } from "./TimedVoting";
 import { StatusIndicator } from "../common/StatusIndicator";
+import { PollResultSummary } from "./PollResultSummary";
 
 export const Voting = ({ id, toggleVoting }) => {
   const actions = useHMSActions();

@@ -1,6 +1,7 @@
 // @ts-check
 import React, { useCallback, useMemo, useState } from "react";
 import {
+  selectAppData,
   selectLocalPeerID,
   selectLocalPeerRoleName,
   useHMSActions,
@@ -19,7 +20,11 @@ import {
 import { checkCorrectAnswer } from "../../../common/utils";
 import { MultipleChoiceOptions } from "../common/MultipleChoiceOptions";
 import { SingleChoiceOptions } from "../common/SingleChoiceOptions";
-import { QUESTION_TYPE, SIDE_PANE_OPTIONS } from "../../../common/constants";
+import {
+  APP_DATA,
+  QUESTION_TYPE,
+  SIDE_PANE_OPTIONS,
+} from "../../../common/constants";
 import { useSidepaneToggle } from "../../AppData/useSidepane";
 
 const TextArea = styled("textarea", {
@@ -52,6 +57,7 @@ export const QuestionCard = ({
   rolesThatCanViewResponses,
 }) => {
   const actions = useHMSActions();
+  const appData = useHMSStore(selectAppData());
   const localPeerID = useHMSStore(selectLocalPeerID);
   const localPeerResponse = responses?.find(
     response => response.peer?.peerid === localPeerID
@@ -111,6 +117,7 @@ export const QuestionCard = ({
     if (!isValidVote) {
       return;
     }
+
     await actions.interactivityCenter.addResponsesToPoll(pollID, [
       {
         questionIndex: index,
@@ -119,6 +126,10 @@ export const QuestionCard = ({
         options: Array.from(multipleOptionAnswer),
       },
     ]);
+    actions.setAppData(APP_DATA.polls, {
+      pollID: [],
+    });
+    console.log(appData.getState(APP_DATA.polls));
   }, [
     actions,
     index,
@@ -127,6 +138,7 @@ export const QuestionCard = ({
     textAnswer,
     singleOptionAnswer,
     multipleOptionAnswer,
+    appData,
   ]);
 
   const handleSkip = useCallback(async () => {
