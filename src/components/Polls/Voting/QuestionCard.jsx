@@ -19,7 +19,8 @@ import {
 import { checkCorrectAnswer } from "../../../common/utils";
 import { MultipleChoiceOptions } from "../common/MultipleChoiceOptions";
 import { SingleChoiceOptions } from "../common/SingleChoiceOptions";
-import { QUESTION_TYPE } from "../../../common/constants";
+import { QUESTION_TYPE, SIDE_PANE_OPTIONS } from "../../../common/constants";
+import { useSidepaneToggle } from "../../AppData/useSidepane";
 
 const TextArea = styled("textarea", {
   backgroundColor: "$surface_brighter",
@@ -273,6 +274,7 @@ const QuestionActions = ({
   onVote,
   onSkip,
 }) => {
+  const toggleSidepane = useSidepaneToggle(SIDE_PANE_OPTIONS.RESULTS);
   return (
     <Flex align="center" justify="end" css={{ gap: "$4", w: "100%" }}>
       {skippable && !response ? (
@@ -286,13 +288,22 @@ const QuestionActions = ({
       ) : null}
 
       {response ? (
-        <Text css={{ fontWeight: "$semiBold", color: "$on_surface_medium" }}>
-          {response.skipped
-            ? "Skipped"
-            : stringAnswerExpected
-            ? "Submitted"
-            : "Voted"}
-        </Text>
+        <>
+          <Text css={{ fontWeight: "$semiBold", color: "$on_surface_medium" }}>
+            {response.skipped
+              ? "Skipped"
+              : stringAnswerExpected
+              ? "Submitted"
+              : "Voted"}
+          </Text>
+          <Button
+            variant="standard"
+            onClick={toggleSidepane}
+            css={{ p: "$xs $10", fontWeight: "$semiBold" }}
+          >
+            View Leaderboard
+          </Button>
+        </>
       ) : (
         <Button
           css={{ p: "$xs $10", fontWeight: "$semiBold" }}
