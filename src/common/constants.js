@@ -135,6 +135,7 @@ export const APP_DATA = {
   dropdownList: "dropdownList",
   widgetState: "widgetState",
   polls: "polls",
+  resultBoardID: "resultBoardID",
 };
 
 export const UI_SETTINGS = {

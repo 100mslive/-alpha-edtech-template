@@ -4,6 +4,7 @@ import {
   selectAppData,
   selectLocalPeerID,
   selectLocalPeerRoleName,
+  selectTemplateAppData,
   useHMSActions,
   useHMSStore,
 } from "@100mslive/react-sdk";
@@ -57,7 +58,6 @@ export const QuestionCard = ({
   rolesThatCanViewResponses,
 }) => {
   const actions = useHMSActions();
-  const appData = useHMSStore(selectAppData());
   const localPeerID = useHMSStore(selectLocalPeerID);
   const localPeerResponse = responses?.find(
     response => response.peer?.peerid === localPeerID
@@ -126,10 +126,18 @@ export const QuestionCard = ({
         options: Array.from(multipleOptionAnswer),
       },
     ]);
-    actions.setAppData(APP_DATA.polls, {
-      pollID: [],
-    });
-    console.log(appData.getState(APP_DATA.polls));
+    //Check is the vote is correct answer
+
+    // if (isCorrectAnswer) {
+    //   actions.setAppData(APP_DATA.polls, {
+    //     pollID: [JSON.stringify],
+    //   });
+    // }
+
+    //Add local peer to the list in store
+    console.log("Is this poll data");
+
+    console.log(pollDataFromStore);
   }, [
     actions,
     index,
@@ -138,7 +146,6 @@ export const QuestionCard = ({
     textAnswer,
     singleOptionAnswer,
     multipleOptionAnswer,
-    appData,
   ]);
 
   const handleSkip = useCallback(async () => {
@@ -272,6 +279,7 @@ export const QuestionCard = ({
           onVote={handleVote}
           response={localPeerResponse}
           stringAnswerExpected={stringAnswerExpected}
+          pollID={pollID}
         />
       )}
     </Box>
@@ -285,7 +293,10 @@ const QuestionActions = ({
   stringAnswerExpected,
   onVote,
   onSkip,
+  pollID,
 }) => {
+  const actions = useHMSActions();
+  const hmsStore = useHMSStore(selectAppData());
   const toggleSidepane = useSidepaneToggle(SIDE_PANE_OPTIONS.RESULTS);
   return (
     <Flex align="center" justify="end" css={{ gap: "$4", w: "100%" }}>
@@ -310,7 +321,12 @@ const QuestionActions = ({
           </Text>
           <Button
             variant="standard"
-            onClick={toggleSidepane}
+            onClick={() => {
+              actions.setAppData(APP_DATA.resultBoardID, pollID);
+              console.log("SET POLL ID IN SESSION STORE");
+
+              toggleSidepane();
+            }}
             css={{ p: "$xs $10", fontWeight: "$semiBold" }}
           >
             View Leaderboard

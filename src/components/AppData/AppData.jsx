@@ -86,6 +86,7 @@ const initialAppData = {
   },
   showPollWidget: false,
   [APP_DATA.polls]: [],
+  [APP_DATA.resultBoardID]: "",
 };
 
 export const AppData = React.memo(
