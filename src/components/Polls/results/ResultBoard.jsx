@@ -5,8 +5,14 @@ import {
   selectPollByID,
   useHMSStore,
 } from "@100mslive/react-sdk";
-import { Button, Flex, Text } from "@100mslive/roomkit-react";
-import { useMemo } from "react";
+import {
+  Avatar,
+  Button,
+  Flex,
+  Text,
+  textEllipsis,
+} from "@100mslive/roomkit-react";
+import { useMemo, useState } from "react";
 import { APP_DATA } from "../../../common/constants";
 import { checkCorrectAnswer } from "../../../common/utils";
 
@@ -17,6 +23,9 @@ const ResultBoard = () => {
   const poll = useHMSStore(selectPollByID(pollID));
   const pollCreatorName = useHMSStore(selectPeerNameByID(poll?.createdBy));
   const isLocalPeerCreator = useHMSStore(selectLocalPeerID) === poll?.createdBy;
+
+  const [correctResultList, setCorrectResultList] = useState([]);
+  const [inCorrectResultList, setInCorrectResultList] = useState([]);
 
   const localCorrectAnswers = useMemo(() => {
     // pollResult={poll.result}
@@ -31,23 +40,24 @@ const ResultBoard = () => {
       console.log(question.answer);
 
       //Get what everyone answered - how to apply loop
-      const localResponse = question.responses?.find(
-        response => response.peer?.peerid === localPeerID
-      );
+      question.responses?.forEach(response => {
+        console.log(response);
+        console.log(question.answer);
+        console.log(question.type);
 
-      console.log("-----LOCAL RESPONSE-----");
-      console.log(localResponse);
-      console.log("-----LOCAL RESPONSE DURATION-----");
-      console.log(localResponse.duration);
+        console.log(
+          checkCorrectAnswer(question.answer, response, question.type)
+        );
 
-      //Compare
-      if (checkCorrectAnswer(question.answer, localResponse, question.type)) {
-        //Add the peer id to the list of the correct answer (how to create a )
-        correctAnswers++;
-        console.log(correctAnswers);
-      } else {
-        //Add the peer id to the uncorrect list
-      }
+        if (checkCorrectAnswer(question.answer, response, question.type)) {
+          console.log("-----CORRECT RESPONSE LIST-----");
+
+          correctResultList.push({ response });
+        } else {
+          console.log("-----INCORRECT RESPONSE DURATION-----");
+          inCorrectResultList.push({ response });
+        }
+      });
     });
     return correctAnswers;
   }, [localPeerID, poll]);
@@ -55,15 +65,47 @@ const ResultBoard = () => {
   return (
     <Flex direction="column" css={{ size: "100%" }}>
       <Text css={{ fontWeight: "$semiBold", mr: "$4" }}>Results</Text>
-      <Button
-        variant="standard"
-        onClick={() => {
-          console.log(pollID);
-        }}
-        css={{ p: "$xs $10", fontWeight: "$semiBold" }}
-      >
-        View Leaderboard
-      </Button>
+
+      <ul>
+        {correctResultList.map(response => (
+          <Flex
+            key={response.response.peer.id}
+            css={{ w: "100%", py: "$4", pr: "$10" }}
+            align="center"
+            data-testid={"participant_" + response.response.peer.username}
+          >
+            <Avatar
+              name={response.response.peer.username}
+              css={{
+                position: "unset",
+                transform: "unset",
+                mr: "$8",
+                fontSize: "$sm",
+                size: "$12",
+                p: "$4",
+              }}
+            />
+            <Flex direction="column" css={{ flex: "1 1 0" }}>
+              <Text
+                variant="md"
+                css={{ ...textEllipsis(150), fontWeight: "$semiBold" }}
+              >
+                {response.response.peer.username}
+              </Text>
+              <Text variant="sub2">{response.response.option}</Text>
+            </Flex>
+            {/* {isConnected && (
+              <ParticipantActions
+                peerId={response.response.peer.id}
+                role={response.response.peer.roleName}
+                onSettings={() => {
+                  setSelectedPeerId(response.response.peer.id);
+                }}
+              />
+            )} */}
+          </Flex>
+        ))}
+      </ul>
     </Flex>
   );
 };
