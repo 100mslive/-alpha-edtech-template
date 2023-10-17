@@ -39,9 +39,13 @@ const ResultBoard = () => {
       console.log("Correct answer is:");
       console.log(question.answer);
 
+      console.log("POLL DATA ---------");
+      console.log(poll);
+
       //Get what everyone answered - how to apply loop
       question.responses?.forEach(response => {
         console.log(response);
+        console.log(response.duration);
         console.log(question.answer);
         console.log(question.type);
 
@@ -92,7 +96,10 @@ const ResultBoard = () => {
               >
                 {response.response.peer.username}
               </Text>
-              <Text variant="sub2">{response.response.option}</Text>
+              <Text variant="sub2">
+                {/* Only works best when only one question instead of multiple questions. */}
+                {poll.questions[0].options[response.response.option - 1].text}
+              </Text>
             </Flex>
             {/* {isConnected && (
               <ParticipantActions
