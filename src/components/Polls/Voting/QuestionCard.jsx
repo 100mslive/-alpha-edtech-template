@@ -4,6 +4,8 @@ import {
   selectAppData,
   selectLocalPeerID,
   selectLocalPeerRoleName,
+  selectPeerNameByID,
+  selectPollByID,
   selectTemplateAppData,
   useHMSActions,
   useHMSStore,
@@ -280,6 +282,8 @@ export const QuestionCard = ({
           response={localPeerResponse}
           stringAnswerExpected={stringAnswerExpected}
           pollID={pollID}
+          isQuiz={isQuiz}
+          type={type}
         />
       )}
     </Box>
@@ -294,10 +298,29 @@ const QuestionActions = ({
   onVote,
   onSkip,
   pollID,
+  isQuiz,
+  type,
 }) => {
   const actions = useHMSActions();
-  const hmsStore = useHMSStore(selectAppData());
+  const poll = useHMSStore(selectPollByID(pollID));
+  const isLocalPeerCreator = useHMSStore(selectLocalPeerID) === poll?.createdBy;
   const toggleSidepane = useSidepaneToggle(SIDE_PANE_OPTIONS.RESULTS);
+
+  // const [correctResultList, setCorrectResultList] = useState([]);
+  // const [inCorrectResultList, setInCorrectResultList] = useState([]);
+
+  // const localCorrectAnswers = useMemo(() => {
+  //   poll.questions?.forEach(question => {
+  //     question.responses?.forEach(response => {
+  //       if (checkCorrectAnswer(question.answer, response, question.type)) {
+  //         correctResultList.push({ response });
+  //       } else {
+  //         inCorrectResultList.push({ response });
+  //       }
+  //     });
+  //   });
+  // }, [poll]);
+
   return (
     <Flex align="center" justify="end" css={{ gap: "$4", w: "100%" }}>
       {skippable && !response ? (
@@ -319,18 +342,21 @@ const QuestionActions = ({
               ? "Submitted"
               : "Voted"}
           </Text>
-          <Button
-            variant="standard"
-            onClick={() => {
-              actions.setAppData(APP_DATA.resultBoardID, pollID);
-              console.log("SET POLL ID IN SESSION STORE");
-
-              toggleSidepane();
-            }}
-            css={{ p: "$xs $10", fontWeight: "$semiBold" }}
-          >
-            View Leaderboard
-          </Button>
+          {isQuiz && (
+            <Button
+              variant="standard"
+              onClick={() => {
+                actions.setAppData(APP_DATA.resultBoardID, pollID);
+                toggleSidepane();
+              }}
+              css={{
+                p: isLocalPeerCreator ? "$xs $10" : "",
+                fontWeight: "$semiBold",
+              }}
+            >
+              {isLocalPeerCreator ? "View Leaderboard" : ""}
+            </Button>
+          )}
         </>
       ) : (
         <Button
