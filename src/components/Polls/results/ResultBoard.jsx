@@ -24,8 +24,11 @@ const ResultBoard = () => {
 
   const poll = useHMSStore(selectPollByID(pollID));
 
-  const [correctResultList, setCorrectResultList] = useState([]);
-  const [inCorrectResultList, setInCorrectResultList] = useState([]);
+  const correctResultList = [];
+  const inCorrectResultList = [];
+
+  // const [correctResultList, setCorrectResultList] = useState([]);
+  // const [inCorrectResultList, setInCorrectResultList] = useState([]);
 
   const localCorrectAnswers = useMemo(() => {
     poll.questions?.forEach(question => {
@@ -64,96 +67,89 @@ const ResultBoard = () => {
           <CrossIcon />
         </IconButton> */}
         </Flex>
-        <Text variant="lg">Correct</Text>
 
-        <ul>
-          {correctResultList.map(response => (
-            <Flex
-              key={response.response.peer.id}
-              css={{ w: "100%", py: "$4", pr: "$10" }}
-              align="center"
-              data-testid={"participant_" + response.response.peer.username}
-            >
-              <Avatar
-                name={response.response.peer.username}
-                css={{
-                  position: "unset",
-                  transform: "unset",
-                  mr: "$8",
-                  fontSize: "$sm",
-                  size: "$12",
-                  p: "$4",
-                }}
-              />
-              <Flex direction="column" css={{ flex: "1 1 0" }}>
-                <Text
-                  variant="md"
-                  css={{ ...textEllipsis(150), fontWeight: "$semiBold" }}
-                >
-                  {response.response.peer.username}
-                </Text>
-                <Text variant="sub2">
-                  {/* Only works best when only one question instead of multiple questions. */}
-                  {poll.questions[0].options[response.response.option - 1].text}
-                </Text>
+        <Flex
+          direction="column"
+          css={{ px: "$10", pb: "$10", overflowY: "auto" }}
+        >
+          <Text variant="lg">Correct</Text>
+          <ul>
+            {correctResultList.map(response => (
+              <Flex
+                key={response.response.peer.id}
+                css={{ w: "100%", py: "$4", pr: "$10" }}
+                align="center"
+                data-testid={"participant_" + response.response.peer.username}
+              >
+                <Avatar
+                  name={response.response.peer.username}
+                  css={{
+                    position: "unset",
+                    transform: "unset",
+                    mr: "$8",
+                    fontSize: "$sm",
+                    size: "$12",
+                    p: "$4",
+                  }}
+                />
+                <Flex direction="column" css={{ flex: "1 1 0" }}>
+                  <Text
+                    variant="md"
+                    css={{ ...textEllipsis(150), fontWeight: "$semiBold" }}
+                  >
+                    {response.response.peer.username}
+                  </Text>
+                  <Text variant="sub2">
+                    {/* Only works best when only one question instead of multiple questions. */}
+                    {
+                      poll.questions[0].options[response.response.option - 1]
+                        .text
+                    }
+                  </Text>
+                </Flex>
               </Flex>
-              {/* {isConnected && (
-      <ParticipantActions
-        peerId={response.response.peer.id}
-        role={response.response.peer.roleName}
-        onSettings={() => {
-          setSelectedPeerId(response.response.peer.id);
-        }}
-      />
-    )} */}
-            </Flex>
-          ))}
-        </ul>
-        <Text variant="lg">Incorrect</Text>
+            ))}
+          </ul>
+          <Text variant="lg">Incorrect</Text>
 
-        <ul>
-          {inCorrectResultList.map(response => (
-            <Flex
-              key={response.response.peer.id}
-              css={{ w: "100%", py: "$4", pr: "$10" }}
-              align="center"
-              data-testid={"participant_" + response.response.peer.username}
-            >
-              <Avatar
-                name={response.response.peer.username}
-                css={{
-                  position: "unset",
-                  transform: "unset",
-                  mr: "$8",
-                  fontSize: "$sm",
-                  size: "$12",
-                  p: "$4",
-                }}
-              />
-              <Flex direction="column" css={{ flex: "1 1 0" }}>
-                <Text
-                  variant="md"
-                  css={{ ...textEllipsis(150), fontWeight: "$semiBold" }}
-                >
-                  {response.response.peer.username}
-                </Text>
-                <Text variant="sub2">
-                  {/* Only works best when only one question instead of multiple questions. */}
-                  {poll.questions[0].options[response.response.option - 1].text}
-                </Text>
+          <ul>
+            {inCorrectResultList.map(response => (
+              <Flex
+                key={response.response.peer.id}
+                css={{ w: "100%", py: "$4", pr: "$10" }}
+                align="center"
+                data-testid={"participant_" + response.response.peer.username}
+              >
+                <Avatar
+                  name={response.response.peer.username}
+                  css={{
+                    position: "unset",
+                    transform: "unset",
+                    mr: "$8",
+                    fontSize: "$sm",
+                    size: "$12",
+                    p: "$4",
+                  }}
+                />
+                <Flex direction="column" css={{ flex: "1 1 0" }}>
+                  <Text
+                    variant="md"
+                    css={{ ...textEllipsis(150), fontWeight: "$semiBold" }}
+                  >
+                    {response.response.peer.username}
+                  </Text>
+                  <Text variant="sub2">
+                    {/* Only works best when only one question instead of multiple questions. */}
+                    {
+                      poll.questions[0].options[response.response.option - 1]
+                        .text
+                    }
+                  </Text>
+                </Flex>
               </Flex>
-              {/* {isConnected && (
-      <ParticipantActions
-        peerId={response.response.peer.id}
-        role={response.response.peer.roleName}
-        onSettings={() => {
-          setSelectedPeerId(response.response.peer.id);
-        }}
-      />
-    )} */}
-            </Flex>
-          ))}
-        </ul>
+            ))}
+          </ul>
+        </Flex>
       </Flex>
     </Fragment>
   );

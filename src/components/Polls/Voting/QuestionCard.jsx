@@ -342,7 +342,7 @@ const QuestionActions = ({
               ? "Submitted"
               : "Voted"}
           </Text>
-          {isQuiz && (
+          {isQuiz && isLocalPeerCreator && (
             <Button
               variant="standard"
               onClick={() => {
@@ -354,7 +354,7 @@ const QuestionActions = ({
                 fontWeight: "$semiBold",
               }}
             >
-              {isLocalPeerCreator ? "View Leaderboard" : ""}
+              View Leaderboard
             </Button>
           )}
         </>
