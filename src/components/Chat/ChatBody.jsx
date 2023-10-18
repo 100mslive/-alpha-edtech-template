@@ -23,6 +23,7 @@ import {
 import { HorizontalMenuIcon, PinIcon } from "@100mslive/react-icons";
 import {
   Box,
+  Button,
   Dropdown,
   Flex,
   IconButton,
@@ -30,7 +31,9 @@ import {
   Text,
   Tooltip,
 } from "@100mslive/roomkit-react";
+
 import { useSetPinnedMessage } from "../hooks/useSetPinnedMessage";
+import { ChatSelector } from "./ChatSelector";
 
 const formatTime = date => {
   if (!(date instanceof Date)) {
@@ -79,6 +82,49 @@ const MessageTypeContainer = ({ left, right }) => {
           {right}
         </SenderName>
       )}
+    </Flex>
+  );
+};
+
+const ReplyContainer = ({ nameOfSender, idOfSender, chatSelectionHandler }) => {
+  return (
+    <Flex
+      align="center"
+      css={{
+        ml: "auto",
+        mr: "$4",
+        p: "$2 $4",
+        border: "1px solid $on_surface_low",
+        r: "$0",
+      }}
+    >
+      <SenderName
+        variant="tiny"
+        as="span"
+        css={{ color: "$on_surface_medium" }}
+      >
+        Reply to
+      </SenderName>
+      <Box
+        css={{
+          borderLeft: "1px solid $on_surface_low",
+          mx: "$4",
+          h: "$8",
+          //Can we add pointer to change as in button
+        }}
+      />
+
+      <Button
+        variant="primary"
+        type="submit"
+        onClick={() => {
+          chatSelectionHandler(idOfSender, nameOfSender);
+        }}
+        data-testid="embed_url_btn"
+        css={{ mr: "$4" }}
+      >
+        {nameOfSender}
+      </Button>
     </Flex>
   );
 };
@@ -191,7 +237,14 @@ const SenderName = styled(Text, {
 });
 
 const ChatMessage = React.memo(
-  ({ index, style = {}, message, setRowHeight, onPin }) => {
+  ({
+    index,
+    style = {},
+    message,
+    setRowHeight,
+    onPin,
+    chatSelectionHandler,
+  }) => {
     const { ref, inView } = useInView({ threshold: 0.5, triggerOnce: true });
     const rowRef = useRef(null);
     useEffect(() => {
@@ -285,6 +338,11 @@ const ChatMessage = React.memo(
           >
             <AnnotisedMessage message={message.message} />
           </Text>
+          <ReplyContainer
+            nameOfSender={message.senderName}
+            idOfSender={message.sender}
+            chatSelectionHandler={chatSelectionHandler}
+          />
         </Flex>
       </Box>
     );
@@ -292,7 +350,15 @@ const ChatMessage = React.memo(
 );
 const ChatList = React.forwardRef(
   (
-    { width, height, setRowHeight, getRowHeight, messages, scrollToBottom },
+    {
+      width,
+      height,
+      setRowHeight,
+      getRowHeight,
+      messages,
+      scrollToBottom,
+      chatSelectionHandler,
+    },
     listRef
   ) => {
     const { setPinnedMessage } = useSetPinnedMessage();
@@ -322,6 +388,7 @@ const ChatList = React.forwardRef(
             message={messages[index]}
             setRowHeight={setRowHeight}
             onPin={() => setPinnedMessage(messages[index])}
+            chatSelectionHandler={chatSelectionHandler}
           />
         )}
       </VariableSizeList>
@@ -329,7 +396,10 @@ const ChatList = React.forwardRef(
   }
 );
 const VirtualizedChatMessages = React.forwardRef(
-  ({ messages, setPinnedMessage, scrollToBottom }, listRef) => {
+  (
+    { messages, setPinnedMessage, scrollToBottom, chatSelectionHandler },
+    listRef
+  ) => {
     const rowHeights = useRef({});
 
     function getRowHeight(index) {
@@ -368,6 +438,7 @@ const VirtualizedChatMessages = React.forwardRef(
               getRowHeight={getRowHeight}
               scrollToBottom={scrollToBottom}
               ref={listRef}
+              chatSelectionHandler={chatSelectionHandler}
             />
           )}
         </AutoSizer>
@@ -377,7 +448,7 @@ const VirtualizedChatMessages = React.forwardRef(
 );
 
 export const ChatBody = React.forwardRef(
-  ({ role, peerId, scrollToBottom }, listRef) => {
+  ({ role, peerId, scrollToBottom, chatSelectionHandler }, listRef) => {
     const storeMessageSelector = role
       ? selectMessagesByRole(role)
       : peerId
@@ -408,6 +479,7 @@ export const ChatBody = React.forwardRef(
           messages={messages}
           scrollToBottom={scrollToBottom}
           ref={listRef}
+          chatSelectionHandler={chatSelectionHandler}
         />
       </Fragment>
     );
