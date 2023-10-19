@@ -97,6 +97,9 @@ const ReplyContainer = ({ nameOfSender, idOfSender, chatSelectionHandler }) => {
         border: "1px solid $on_surface_low",
         r: "$0",
       }}
+      onClick={() => {
+        chatSelectionHandler(idOfSender, nameOfSender);
+      }}
     >
       <SenderName
         variant="tiny"
@@ -114,17 +117,13 @@ const ReplyContainer = ({ nameOfSender, idOfSender, chatSelectionHandler }) => {
         }}
       />
 
-      <Button
-        variant="primary"
-        type="submit"
-        onClick={() => {
-          chatSelectionHandler(idOfSender, nameOfSender);
-        }}
-        data-testid="embed_url_btn"
-        css={{ mr: "$4" }}
+      <SenderName
+        variant="tiny"
+        as="span"
+        css={{ color: "$on_surface_medium" }}
       >
         {nameOfSender}
-      </Button>
+      </SenderName>
     </Flex>
   );
 };
