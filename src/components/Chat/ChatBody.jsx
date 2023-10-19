@@ -86,8 +86,15 @@ const MessageTypeContainer = ({ left, right }) => {
   );
 };
 
-const ReplyContainer = ({ nameOfSender, idOfSender, chatSelectionHandler }) => {
-  return (
+const ReplyContainer = ({
+  hasCurrentUserSent,
+  nameOfSender,
+  idOfSender,
+  chatSelectionHandler,
+}) => {
+  return hasCurrentUserSent ? (
+    <></>
+  ) : (
     <Flex
       align="center"
       css={{
@@ -113,7 +120,6 @@ const ReplyContainer = ({ nameOfSender, idOfSender, chatSelectionHandler }) => {
           borderLeft: "1px solid $on_surface_low",
           mx: "$4",
           h: "$8",
-          //Can we add pointer to change as in button
         }}
       />
 
@@ -338,6 +344,7 @@ const ChatMessage = React.memo(
             <AnnotisedMessage message={message.message} />
           </Text>
           <ReplyContainer
+            hasCurrentUserSent={message.sender === localPeerId}
             nameOfSender={message.senderName}
             idOfSender={message.sender}
             chatSelectionHandler={chatSelectionHandler}
