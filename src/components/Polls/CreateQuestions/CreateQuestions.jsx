@@ -14,7 +14,7 @@ import { isValidQuestion, QuestionForm } from "./QuestionForm";
 import { SavedQuestion } from "./SavedQuestion";
 import { useWidgetToggle } from "../../AppData/useSidepane";
 import { useWidgetState } from "../../AppData/useUISettings";
-import { WIDGET_VIEWS } from "../../../common/constants";
+import { APP_DATA, WIDGET_VIEWS } from "../../../common/constants";
 
 export function CreateQuestions() {
   const [questions, setQuestions] = useState([{ draftID: uuid() }]);
