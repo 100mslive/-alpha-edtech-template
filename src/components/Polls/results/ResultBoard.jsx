@@ -27,9 +27,6 @@ const ResultBoard = () => {
   const correctResultList = [];
   const inCorrectResultList = [];
 
-  // const [correctResultList, setCorrectResultList] = useState([]);
-  // const [inCorrectResultList, setInCorrectResultList] = useState([]);
-
   const localCorrectAnswers = useMemo(() => {
     poll.questions?.forEach(question => {
       question.responses?.forEach(response => {

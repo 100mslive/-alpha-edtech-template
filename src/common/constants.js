@@ -134,7 +134,6 @@ export const APP_DATA = {
   pinnedTrackId: "pinnedTrackId",
   dropdownList: "dropdownList",
   widgetState: "widgetState",
-  polls: "polls",
   resultBoardID: "resultBoardID",
 };
 

@@ -56,7 +56,6 @@ export function CreateQuestions() {
       console.log(data);
       //Sets showPollWidget true for local peer
       actions.setAppData("showPollWidget", true);
-      actions.setAppData(APP_DATA.polls, { id: [] });
     }
 
     setWidgetView(WIDGET_VIEWS.VOTE);

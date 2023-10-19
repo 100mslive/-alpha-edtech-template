@@ -128,18 +128,6 @@ export const QuestionCard = ({
         options: Array.from(multipleOptionAnswer),
       },
     ]);
-    //Check is the vote is correct answer
-
-    // if (isCorrectAnswer) {
-    //   actions.setAppData(APP_DATA.polls, {
-    //     pollID: [JSON.stringify],
-    //   });
-    // }
-
-    //Add local peer to the list in store
-    console.log("Is this poll data");
-
-    console.log(pollDataFromStore);
   }, [
     actions,
     index,
@@ -305,21 +293,6 @@ const QuestionActions = ({
   const poll = useHMSStore(selectPollByID(pollID));
   const isLocalPeerCreator = useHMSStore(selectLocalPeerID) === poll?.createdBy;
   const toggleSidepane = useSidepaneToggle(SIDE_PANE_OPTIONS.RESULTS);
-
-  // const [correctResultList, setCorrectResultList] = useState([]);
-  // const [inCorrectResultList, setInCorrectResultList] = useState([]);
-
-  // const localCorrectAnswers = useMemo(() => {
-  //   poll.questions?.forEach(question => {
-  //     question.responses?.forEach(response => {
-  //       if (checkCorrectAnswer(question.answer, response, question.type)) {
-  //         correctResultList.push({ response });
-  //       } else {
-  //         inCorrectResultList.push({ response });
-  //       }
-  //     });
-  //   });
-  // }, [poll]);
 
   return (
     <Flex align="center" justify="end" css={{ gap: "$4", w: "100%" }}>

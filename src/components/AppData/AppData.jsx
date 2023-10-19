@@ -85,7 +85,6 @@ const initialAppData = {
     [WIDGET_STATE.view]: "",
   },
   showPollWidget: false,
-  [APP_DATA.polls]: [],
   [APP_DATA.resultBoardID]: "",
 };
 
