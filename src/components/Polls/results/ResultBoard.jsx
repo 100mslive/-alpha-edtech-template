@@ -1,22 +1,13 @@
 import {
   selectAppData,
   selectLocalPeerID,
-  selectPeerNameByID,
   selectPollByID,
   useHMSStore,
 } from "@100mslive/react-sdk";
-import {
-  Avatar,
-  Button,
-  Flex,
-  IconButton,
-  Text,
-  textEllipsis,
-} from "@100mslive/roomkit-react";
-import { Fragment, useMemo, useState } from "react";
+import { Avatar, Text, textEllipsis } from "@100mslive/roomkit-react";
+import { Fragment, useMemo } from "react";
 import { APP_DATA } from "../../../common/constants";
 import { checkCorrectAnswer } from "../../../common/utils";
-import { CrossIcon } from "@100mslive/react-icons";
 
 const ResultBoard = () => {
   const localPeerID = useHMSStore(selectLocalPeerID);
@@ -53,8 +44,6 @@ const ResultBoard = () => {
     <Fragment>
       <Flex direction="column" css={{ size: "100%" }}>
         <Flex
-          // How to pop the sidepane?
-          // onClick={onToggle}
           align="center"
           css={{
             color: "$on_surface_high",
@@ -63,16 +52,6 @@ const ResultBoard = () => {
           }}
         >
           <Text variant="h6">RESULTS</Text>
-          {/* <IconButton
-          css={{ ml: "auto" }}
-          onClick={e => {
-            e.stopPropagation();
-            selectorOpen ? onToggle() : toggleChat();
-          }}
-          data-testid="close_chat"
-        >
-          <CrossIcon />
-        </IconButton> */}
         </Flex>
 
         <Flex
