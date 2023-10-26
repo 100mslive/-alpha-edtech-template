@@ -4,6 +4,7 @@ import { useDebounce } from "react-use";
 import { selectDidIJoinWithin, useHMSStore } from "@100mslive/react-sdk";
 import { provider as room } from "./PusherCommunicationProvider";
 import { WhiteboardEvents as Events } from "./WhiteboardEvents";
+import { useIsHeadless } from "../../components/AppData/useUISettings";
 import { useWhiteboardMetadata } from "./useWhiteboardMetadata";
 
 const useWhiteboardState = () => {
@@ -17,6 +18,8 @@ const useWhiteboardState = () => {
   return { shouldRequestState, amIWhiteboardOwner };
 };
 
+const HEADLESS_ZOOM_OFFSET = 0.05;
+
 /**
  * Ref: https://github.com/tldraw/tldraw/blob/main/apps/www/hooks/useMultiplayerState.ts
  */
@@ -26,6 +29,7 @@ export function useMultiplayerState(roomId) {
   const [point, setPoint] = useState([0, 0]);
   const [isReady, setIsReady] = useState(false);
   const { amIWhiteboardOwner, shouldRequestState } = useWhiteboardState();
+  const isHeadless = useIsHeadless();
 
   /**
    * Stores current state(shapes, bindings, [assets]) of the whiteboard
@@ -88,13 +92,18 @@ export function useMultiplayerState(roomId) {
         return;
       }
 
-      if (merge) {
-        if (app) {
-          if (!amIWhiteboardOwner) {
-            // Currently only the owner can change the pan and zoom of the bord
-            app.setCamera(camera.point, camera.zoom, "Remote change");
-          }
+      if (app) {
+        if (!amIWhiteboardOwner) {
+          // Currently only the owner can change the pan and zoom of the bord
+          app.setCamera(
+            camera.point,
+            isHeadless ? camera.zoom - HEADLESS_ZOOM_OFFSET : camera.zoom,
+            "Remote change"
+          );
         }
+      }
+
+      if (merge) {
         const lShapes = rLiveShapes.current;
         const lBindings = rLiveBindings.current;
 
@@ -115,14 +124,11 @@ export function useMultiplayerState(roomId) {
           }
         });
       } else {
-        if (!amIWhiteboardOwner) {
-          app.setCamera(camera.point, camera.zoom, "Remote change");
-        }
         rLiveShapes.current = new Map(Object.entries(shapes));
         rLiveBindings.current = new Map(Object.entries(bindings));
       }
     },
-    [app, amIWhiteboardOwner]
+    [app, isHeadless, amIWhiteboardOwner]
   );
 
   const applyStateToBoard = useCallback(
