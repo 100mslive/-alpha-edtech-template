@@ -92,7 +92,11 @@ const ReplyContainer = ({
   idOfSender,
   chatSelectionHandler,
 }) => {
-  return hasCurrentUserSent ? (
+  const localPeerRole = useHMSStore(selectLocalPeerRoleName);
+  const hlsViewerRoleList = process.env.REACT_APP_HLS_VIEWER_ROLES;
+  const isHLSLiveStreamViewer = hlsViewerRoleList.includes(localPeerRole);
+
+  return hasCurrentUserSent && isHLSLiveStreamViewer ? (
     <></>
   ) : (
     <Flex
