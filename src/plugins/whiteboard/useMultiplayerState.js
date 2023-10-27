@@ -18,7 +18,6 @@ const useWhiteboardState = () => {
   return { shouldRequestState, amIWhiteboardOwner };
 };
 
-
 /**
  * Ref: https://github.com/tldraw/tldraw/blob/main/apps/www/hooks/useMultiplayerState.ts
  */
@@ -94,12 +93,8 @@ export function useMultiplayerState(roomId) {
       if (app) {
         if (!amIWhiteboardOwner) {
           // Currently only the owner can change the pan and zoom of the bord
-          app.setCamera(
-            camera.point,
-            camera.zoom,
-            "Remote change"
-          );
-          if(isHeadless) {
+          app.setCamera(camera.point, camera.zoom, "Remote change");
+          if (isHeadless) {
             app.zoomToFit();
           }
         }
@@ -222,7 +217,7 @@ export function useMultiplayerState(roomId) {
   );
 
   const updateCamera = useCallback(camera => {
-    if(!camera) {
+    if (!camera) {
       return;
     }
     camera.point && setPoint(camera.point);
