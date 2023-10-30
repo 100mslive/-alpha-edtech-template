@@ -47,6 +47,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.mjs/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: /\.js$/,
         enforce: "pre",
         use: ["source-map-loader"],

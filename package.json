@@ -16,7 +16,7 @@
     "@100mslive/roomkit-react": "0.1.4",
     "@emoji-mart/data": "^1.0.6",
     "@emoji-mart/react": "^1.0.1",
-    "@tldraw/tldraw": "^1.18.4",
+    "@tldraw/tldraw": "2.0.0-alpha.15",
     "emoji-mart": "^5.2.2",
     "eventemitter2": "^6.4.7",
     "js-confetti": "^0.10.2",
