@@ -194,8 +194,8 @@ export function useMultiplayerState(roomId) {
     sendCurrentState,
   ]);
 
-  const zoomToContent = useCallback(() => {
-    app.zoomToContent();
+  const zoomToFit = useCallback(() => {
+    app.zoomToFit();
   }, [app]);
 
   // Callbacks --------------
@@ -253,7 +253,7 @@ export function useMultiplayerState(roomId) {
       if (stillAlive) {
         unsubs.push(room.subscribe(Events.STATE_CHANGE, handleChanges));
         unsubs.push(room.subscribe(Events.CURRENT_STATE, handleChanges));
-        unsubs.push(room.subscribe(Events.CURRENT_STATE, zoomToContent));
+        unsubs.push(room.subscribe(Events.CURRENT_STATE, zoomToFit));
 
         // On request state(peer join), send whole current state to update the new peer's whiteboard
         unsubs.push(room.subscribe(Events.REQUEST_STATE, sendCurrentState));
@@ -276,7 +276,7 @@ export function useMultiplayerState(roomId) {
     setupInitialState,
     sendCurrentState,
     handleChanges,
-    zoomToContent,
+    zoomToFit,
   ]);
 
   useEffect(() => {
