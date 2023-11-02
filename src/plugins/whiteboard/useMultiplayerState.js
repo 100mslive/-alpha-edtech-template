@@ -246,14 +246,14 @@ export function useMultiplayerState(roomId) {
   );
 
   const onChange = useCallback(() => {
-    if (!app || !amIWhiteboardOwner) return;
+    if (!app || isHeadless) return;
 
     if (app.camera.point[0] !== 0 || app.camera.point[1] !== 0) {
       app.setCamera([0, 0], app.camera.zoom, "force camera");
     }
 
     keepSelectedShapesInViewport(app);
-  }, [app, amIWhiteboardOwner]);
+  }, [app, isHeadless]);
 
   // Subscriptions and initial setup
   useEffect(() => {
