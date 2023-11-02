@@ -268,6 +268,10 @@ const ChatMessage = React.memo(
     // show pin action only if peer has remove others permission and the message is of broadcast type
     const showPinAction = permissions.removeOthers && !messageType;
 
+    const localPeerRole = useHMSStore(selectLocalPeerRoleName);
+    const hlsViewerRoleList = process.env.REACT_APP_HLS_VIEWER_ROLES;
+    const isHLSLiveStreamViewer = hlsViewerRoleList.includes(localPeerRole);
+
     useEffect(() => {
       if (message.id && !message.read && inView) {
         hmsActions.setMessageRead(true, message.id);
@@ -343,12 +347,15 @@ const ChatMessage = React.memo(
           >
             <AnnotisedMessage message={message.message} />
           </Text>
-          <ReplyContainer
-            hasCurrentUserSent={message.sender === localPeerId}
-            nameOfSender={message.senderName}
-            idOfSender={message.sender}
-            chatSelectionHandler={chatSelectionHandler}
-          />
+
+          {!isHLSLiveStreamViewer && (
+            <ReplyContainer
+              hasCurrentUserSent={message.sender === localPeerId}
+              nameOfSender={message.senderName}
+              idOfSender={message.sender}
+              chatSelectionHandler={chatSelectionHandler}
+            />
+          )}
         </Flex>
       </Box>
     );
