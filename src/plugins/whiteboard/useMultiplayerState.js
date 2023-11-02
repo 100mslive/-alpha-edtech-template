@@ -4,6 +4,7 @@ import { Utils } from "@tldraw/core";
 import { selectDidIJoinWithin, useHMSStore } from "@100mslive/react-sdk";
 import { provider as room } from "./PusherCommunicationProvider";
 import { WhiteboardEvents as Events } from "./WhiteboardEvents";
+import { useIsHeadless } from "../../components/AppData/useUISettings";
 import { useWhiteboardMetadata } from "./useWhiteboardMetadata";
 
 const useWhiteboardState = () => {
@@ -56,12 +57,19 @@ export function useMultiplayerState(roomId) {
   const [app, setApp] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const { amIWhiteboardOwner, shouldRequestState } = useWhiteboardState();
+  const isHeadless = useIsHeadless();
 
   /**
    * Stores current state(shapes, bindings, [assets]) of the whiteboard
    */
   const rLiveShapes = useRef(new Map());
   const rLiveBindings = useRef(new Map());
+
+  const zoomToFit = useCallback(() => {
+    if (!app) return;
+
+    app.zoomToFit();
+  }, [app]);
 
   const getCurrentState = useCallback(() => {
     return {
@@ -165,8 +173,19 @@ export function useMultiplayerState(roomId) {
         merge: true,
       });
       applyStateToBoard(getCurrentState());
+
+      if (!amIWhiteboardOwner && isHeadless) {
+        zoomToFit();
+      }
     },
-    [applyStateToBoard, getCurrentState, updateLocalState]
+    [
+      applyStateToBoard,
+      getCurrentState,
+      updateLocalState,
+      amIWhiteboardOwner,
+      isHeadless,
+      zoomToFit,
+    ]
   );
 
   const setupInitialState = useCallback(() => {
@@ -193,10 +212,6 @@ export function useMultiplayerState(roomId) {
     handleChanges,
     sendCurrentState,
   ]);
-
-  const zoomToFit = useCallback(() => {
-    app.zoomToFit();
-  }, [app]);
 
   // Callbacks --------------
   // Put the state into the window, for debugging.
@@ -231,14 +246,14 @@ export function useMultiplayerState(roomId) {
   );
 
   const onChange = useCallback(() => {
-    if (!app) return;
+    if (!app || !amIWhiteboardOwner) return;
 
     if (app.camera.point[0] !== 0 || app.camera.point[1] !== 0) {
       app.setCamera([0, 0], app.camera.zoom, "force camera");
     }
 
     keepSelectedShapesInViewport(app);
-  }, [app]);
+  }, [app, amIWhiteboardOwner]);
 
   // Subscriptions and initial setup
   useEffect(() => {
