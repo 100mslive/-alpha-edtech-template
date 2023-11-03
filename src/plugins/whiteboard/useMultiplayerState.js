@@ -249,7 +249,7 @@ export function useMultiplayerState(roomId) {
     if (!app || isHeadless) return;
 
     if (app.camera.point[0] !== 0 || app.camera.point[1] !== 0) {
-      app.setCamera([0, 0], app.camera.zoom, "force camera");
+      app.setCamera([0, 0], 1, "force camera");
     }
 
     keepSelectedShapesInViewport(app);
