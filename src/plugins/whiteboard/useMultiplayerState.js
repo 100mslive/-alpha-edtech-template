@@ -1,9 +1,10 @@
 // @ts-check
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useDebounce } from "react-use";
+import { Utils } from "@tldraw/core";
 import { selectDidIJoinWithin, useHMSStore } from "@100mslive/react-sdk";
 import { provider as room } from "./PusherCommunicationProvider";
 import { WhiteboardEvents as Events } from "./WhiteboardEvents";
+import { useIsHeadless } from "../../components/AppData/useUISettings";
 import { useWhiteboardMetadata } from "./useWhiteboardMetadata";
 
 const useWhiteboardState = () => {
@@ -17,21 +18,58 @@ const useWhiteboardState = () => {
   return { shouldRequestState, amIWhiteboardOwner };
 };
 
+function keepSelectedShapesInViewport(app) {
+  const { selectedIds } = app;
+  if (selectedIds.length <= 0) return;
+
+  // Get the selected shapes
+  const shapes = selectedIds.map(id => app.getShape(id));
+
+  // Get the bounds of the selected shapes
+  const bounds = Utils.getCommonBounds(
+    shapes.map(shape => app.getShapeUtil(shape).getBounds(shape))
+  );
+
+  // Define the min/max x/y (here we're using the viewport but
+  // we could use any arbitrary bounds)
+  const { minX, minY, maxX, maxY } = app.viewport;
+
+  // Check for any overlaps between the viewport and the selection bounding box
+  let ox = Math.min(bounds.minX, minX) || Math.max(bounds.maxX - maxX, 0);
+  let oy = Math.min(bounds.minY, minY) || Math.max(bounds.maxY - maxY, 0);
+
+  // If there's any overlaps, then update the shapes so that
+  // there is no longer any overlap.
+  if (ox !== 0 || oy !== 0) {
+    app.updateShapes(
+      ...shapes.map(shape => ({
+        id: shape.id,
+        point: [shape.point[0] - ox, shape.point[1] - oy],
+      }))
+    );
+  }
+}
+
 /**
  * Ref: https://github.com/tldraw/tldraw/blob/main/apps/www/hooks/useMultiplayerState.ts
  */
 export function useMultiplayerState(roomId) {
   const [app, setApp] = useState(null);
-  const [zoom, setZoom] = useState(1);
-  const [point, setPoint] = useState([0, 0]);
   const [isReady, setIsReady] = useState(false);
   const { amIWhiteboardOwner, shouldRequestState } = useWhiteboardState();
+  const isHeadless = useIsHeadless();
 
   /**
    * Stores current state(shapes, bindings, [assets]) of the whiteboard
    */
   const rLiveShapes = useRef(new Map());
   const rLiveBindings = useRef(new Map());
+
+  const zoomToFit = useCallback(() => {
+    if (!app) return;
+
+    app.zoomToFit();
+  }, [app]);
 
   const getCurrentState = useCallback(() => {
     return {
@@ -41,14 +79,12 @@ export function useMultiplayerState(roomId) {
       bindings: rLiveBindings.current
         ? Object.fromEntries(rLiveBindings.current)
         : {},
-      camera: app && app.camera,
     };
-  }, [app]);
+  }, []);
 
   const sendDataInStream = useCallback(() => {
     const shapesIterator = rLiveShapes.current?.entries();
     const bindingsIterator = rLiveBindings.current?.entries();
-    const camera = { point: point, zoom: zoom };
     let initial = true;
     // it will run until shapes and binding data is broadcast
     for (;;) {
@@ -63,7 +99,6 @@ export function useMultiplayerState(roomId) {
         room.broadcastEvent(Events.CURRENT_STATE, {
           shapes: shape,
           bindings: binding,
-          camera: camera,
         });
         initial = false;
         continue;
@@ -71,10 +106,10 @@ export function useMultiplayerState(roomId) {
       room.broadcastEvent(Events.STATE_CHANGE, {
         shapes: shape,
         bindings: binding,
-        camera: camera,
       });
     }
-  }, [point, zoom]);
+  }, []);
+
   const sendCurrentState = useCallback(() => {
     // TODO - add data chunking
     if (amIWhiteboardOwner && isReady) {
@@ -82,48 +117,36 @@ export function useMultiplayerState(roomId) {
     }
   }, [amIWhiteboardOwner, isReady, sendDataInStream]);
 
-  const updateLocalState = useCallback(
-    ({ shapes, bindings, camera, merge = true }) => {
-      if (!(shapes && bindings && camera)) {
-        return;
-      }
+  const updateLocalState = useCallback(({ shapes, bindings, merge = true }) => {
+    if (!(shapes && bindings)) {
+      return;
+    }
 
-      if (merge) {
-        if (app) {
-          if (!amIWhiteboardOwner) {
-            // Currently only the owner can change the pan and zoom of the bord
-            app.setCamera(camera.point, camera.zoom, "Remote change");
-          }
+    if (merge) {
+      const lShapes = rLiveShapes.current;
+      const lBindings = rLiveBindings.current;
+
+      if (!(lShapes && lBindings)) return;
+      Object.entries(shapes).forEach(([id, shape]) => {
+        if (!shape) {
+          lShapes.delete(id);
+        } else {
+          lShapes.set(shape.id, shape);
         }
-        const lShapes = rLiveShapes.current;
-        const lBindings = rLiveBindings.current;
+      });
 
-        if (!(lShapes && lBindings)) return;
-        Object.entries(shapes).forEach(([id, shape]) => {
-          if (!shape) {
-            lShapes.delete(id);
-          } else {
-            lShapes.set(shape.id, shape);
-          }
-        });
-
-        Object.entries(bindings).forEach(([id, binding]) => {
-          if (!binding) {
-            lBindings.delete(id);
-          } else {
-            lBindings.set(binding.id, binding);
-          }
-        });
-      } else {
-        if (!amIWhiteboardOwner) {
-          app.setCamera(camera.point, camera.zoom, "Remote change");
+      Object.entries(bindings).forEach(([id, binding]) => {
+        if (!binding) {
+          lBindings.delete(id);
+        } else {
+          lBindings.set(binding.id, binding);
         }
-        rLiveShapes.current = new Map(Object.entries(shapes));
-        rLiveBindings.current = new Map(Object.entries(bindings));
-      }
-    },
-    [app, amIWhiteboardOwner]
-  );
+      });
+    } else {
+      rLiveShapes.current = new Map(Object.entries(shapes));
+      rLiveBindings.current = new Map(Object.entries(bindings));
+    }
+  }, []);
 
   const applyStateToBoard = useCallback(
     state => {
@@ -143,16 +166,26 @@ export function useMultiplayerState(roomId) {
       if (!state) {
         return;
       }
-      const { shapes, bindings, camera } = state;
+      const { shapes, bindings } = state;
       updateLocalState({
         shapes,
         bindings,
-        camera,
         merge: true,
       });
       applyStateToBoard(getCurrentState());
+
+      if (!amIWhiteboardOwner && isHeadless) {
+        zoomToFit();
+      }
     },
-    [applyStateToBoard, getCurrentState, updateLocalState]
+    [
+      applyStateToBoard,
+      getCurrentState,
+      updateLocalState,
+      amIWhiteboardOwner,
+      isHeadless,
+      zoomToFit,
+    ]
   );
 
   const setupInitialState = useCallback(() => {
@@ -195,10 +228,9 @@ export function useMultiplayerState(roomId) {
   // Update the live shapes when the app's shapes change.
   const onChangePage = useCallback(
     (_app, shapes, bindings, _assets) => {
-      const camera = { point: point, zoom: zoom };
-      updateLocalState({ shapes, bindings, camera });
+      updateLocalState({ shapes, bindings });
       //keepSelectedShapesInViewport(app);
-      room.broadcastEvent(Events.STATE_CHANGE, { shapes, bindings, camera });
+      room.broadcastEvent(Events.STATE_CHANGE, { shapes, bindings });
 
       /**
        * Tldraw thinks that the next update passed to replacePageContent after onChangePage is the own update triggered by onChangePage
@@ -210,35 +242,18 @@ export function useMultiplayerState(roomId) {
        */
       applyStateToBoard(getCurrentState());
     },
-    [updateLocalState, applyStateToBoard, getCurrentState, point, zoom]
+    [updateLocalState, applyStateToBoard, getCurrentState]
   );
 
-  const updateCamera = useCallback(camera => {
-    camera.point && setPoint(camera.point);
-    camera.zoom && setZoom(camera.zoom);
-  }, []);
+  const onChange = useCallback(() => {
+    if (!app || isHeadless) return;
 
-  useDebounce(
-    val => {
-      updateCamera(val);
-    },
-    300,
-    [updateCamera]
-  );
+    if (app.camera.point[0] !== 0 || app.camera.point[1] !== 0) {
+      app.setCamera([0, 0], 1, "force camera");
+    }
 
-  //Handle presence updates when the user's pointer / selection changes
-  const onChangePresence = useCallback(
-    app => {
-      app.camera.zoom &&
-        app.camera.point &&
-        app.camera.point[0] &&
-        (app.camera.point[0] !== point[0] ||
-          app.camera.point[1] !== point[1] ||
-          app.camera.zoom !== zoom) &&
-        updateCamera(app.camera);
-    },
-    [point, updateCamera, zoom]
-  );
+    keepSelectedShapesInViewport(app);
+  }, [app, isHeadless]);
 
   // Subscriptions and initial setup
   useEffect(() => {
@@ -253,6 +268,7 @@ export function useMultiplayerState(roomId) {
       if (stillAlive) {
         unsubs.push(room.subscribe(Events.STATE_CHANGE, handleChanges));
         unsubs.push(room.subscribe(Events.CURRENT_STATE, handleChanges));
+        unsubs.push(room.subscribe(Events.CURRENT_STATE, zoomToFit));
 
         // On request state(peer join), send whole current state to update the new peer's whiteboard
         unsubs.push(room.subscribe(Events.REQUEST_STATE, sendCurrentState));
@@ -269,7 +285,14 @@ export function useMultiplayerState(roomId) {
       stillAlive = false;
       unsubs.forEach(unsub => unsub());
     };
-  }, [app, roomId, setupInitialState, sendCurrentState, handleChanges]);
+  }, [
+    app,
+    roomId,
+    setupInitialState,
+    sendCurrentState,
+    handleChanges,
+    zoomToFit,
+  ]);
 
   useEffect(() => {
     // Store last state on closing whitboard so that when the board is reopened the state could be fetched and reapplied
@@ -283,5 +306,5 @@ export function useMultiplayerState(roomId) {
     return handleUnmount;
   }, [isReady, shouldRequestState, getCurrentState]);
 
-  return { onMount, onChangePage, onChangePresence };
+  return { onMount, onChangePage, onChange };
 }

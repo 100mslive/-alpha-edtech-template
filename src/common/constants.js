@@ -134,6 +134,7 @@ export const APP_DATA = {
   pinnedTrackId: "pinnedTrackId",
   dropdownList: "dropdownList",
   widgetState: "widgetState",
+  resultBoardID: "resultBoardID",
 };
 
 export const UI_SETTINGS = {
@@ -168,6 +169,7 @@ export const SIDE_PANE_OPTIONS = {
   TILES: "TILES",
   SCREEN_TILES: "SCREEN_TILES",
   WIDGET: "WIDGET",
+  RESULTS: "RESULTS",
 };
 
 export const SUBSCRIBED_NOTIFICATIONS = {

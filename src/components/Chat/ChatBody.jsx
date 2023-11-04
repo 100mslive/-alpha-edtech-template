@@ -23,6 +23,7 @@ import {
 import { HorizontalMenuIcon, PinIcon } from "@100mslive/react-icons";
 import {
   Box,
+  Button,
   Dropdown,
   Flex,
   IconButton,
@@ -30,7 +31,9 @@ import {
   Text,
   Tooltip,
 } from "@100mslive/roomkit-react";
+
 import { useSetPinnedMessage } from "../hooks/useSetPinnedMessage";
+import { ChatSelector } from "./ChatSelector";
 
 const formatTime = date => {
   if (!(date instanceof Date)) {
@@ -79,6 +82,54 @@ const MessageTypeContainer = ({ left, right }) => {
           {right}
         </SenderName>
       )}
+    </Flex>
+  );
+};
+
+const ReplyContainer = ({
+  hasCurrentUserSent,
+  nameOfSender,
+  idOfSender,
+  chatSelectionHandler,
+}) => {
+  return hasCurrentUserSent ? (
+    <></>
+  ) : (
+    <Flex
+      align="center"
+      css={{
+        ml: "auto",
+        mr: "$4",
+        p: "$2 $4",
+        border: "1px solid $on_surface_low",
+        r: "$0",
+      }}
+      onClick={() => {
+        chatSelectionHandler(idOfSender, nameOfSender);
+      }}
+    >
+      <SenderName
+        variant="tiny"
+        as="span"
+        css={{ color: "$on_surface_medium" }}
+      >
+        Reply to
+      </SenderName>
+      <Box
+        css={{
+          borderLeft: "1px solid $on_surface_low",
+          mx: "$4",
+          h: "$8",
+        }}
+      />
+
+      <SenderName
+        variant="tiny"
+        as="span"
+        css={{ color: "$on_surface_medium" }}
+      >
+        {nameOfSender}
+      </SenderName>
     </Flex>
   );
 };
@@ -191,7 +242,14 @@ const SenderName = styled(Text, {
 });
 
 const ChatMessage = React.memo(
-  ({ index, style = {}, message, setRowHeight, onPin }) => {
+  ({
+    index,
+    style = {},
+    message,
+    setRowHeight,
+    onPin,
+    chatSelectionHandler,
+  }) => {
     const { ref, inView } = useInView({ threshold: 0.5, triggerOnce: true });
     const rowRef = useRef(null);
     useEffect(() => {
@@ -209,6 +267,10 @@ const ChatMessage = React.memo(
     });
     // show pin action only if peer has remove others permission and the message is of broadcast type
     const showPinAction = permissions.removeOthers && !messageType;
+
+    const localPeerRole = useHMSStore(selectLocalPeerRoleName);
+    const hlsViewerRoleList = process.env.REACT_APP_HLS_VIEWER_ROLES;
+    const isHLSLiveStreamViewer = hlsViewerRoleList.includes(localPeerRole);
 
     useEffect(() => {
       if (message.id && !message.read && inView) {
@@ -285,6 +347,15 @@ const ChatMessage = React.memo(
           >
             <AnnotisedMessage message={message.message} />
           </Text>
+
+          {!isHLSLiveStreamViewer && (
+            <ReplyContainer
+              hasCurrentUserSent={message.sender === localPeerId}
+              nameOfSender={message.senderName}
+              idOfSender={message.sender}
+              chatSelectionHandler={chatSelectionHandler}
+            />
+          )}
         </Flex>
       </Box>
     );
@@ -292,7 +363,15 @@ const ChatMessage = React.memo(
 );
 const ChatList = React.forwardRef(
   (
-    { width, height, setRowHeight, getRowHeight, messages, scrollToBottom },
+    {
+      width,
+      height,
+      setRowHeight,
+      getRowHeight,
+      messages,
+      scrollToBottom,
+      chatSelectionHandler,
+    },
     listRef
   ) => {
     const { setPinnedMessage } = useSetPinnedMessage();
@@ -322,6 +401,7 @@ const ChatList = React.forwardRef(
             message={messages[index]}
             setRowHeight={setRowHeight}
             onPin={() => setPinnedMessage(messages[index])}
+            chatSelectionHandler={chatSelectionHandler}
           />
         )}
       </VariableSizeList>
@@ -329,7 +409,10 @@ const ChatList = React.forwardRef(
   }
 );
 const VirtualizedChatMessages = React.forwardRef(
-  ({ messages, setPinnedMessage, scrollToBottom }, listRef) => {
+  (
+    { messages, setPinnedMessage, scrollToBottom, chatSelectionHandler },
+    listRef
+  ) => {
     const rowHeights = useRef({});
 
     function getRowHeight(index) {
@@ -368,6 +451,7 @@ const VirtualizedChatMessages = React.forwardRef(
               getRowHeight={getRowHeight}
               scrollToBottom={scrollToBottom}
               ref={listRef}
+              chatSelectionHandler={chatSelectionHandler}
             />
           )}
         </AutoSizer>
@@ -377,7 +461,7 @@ const VirtualizedChatMessages = React.forwardRef(
 );
 
 export const ChatBody = React.forwardRef(
-  ({ role, peerId, scrollToBottom }, listRef) => {
+  ({ role, peerId, scrollToBottom, chatSelectionHandler }, listRef) => {
     const storeMessageSelector = role
       ? selectMessagesByRole(role)
       : peerId
@@ -408,6 +492,7 @@ export const ChatBody = React.forwardRef(
           messages={messages}
           scrollToBottom={scrollToBottom}
           ref={listRef}
+          chatSelectionHandler={chatSelectionHandler}
         />
       </Fragment>
     );

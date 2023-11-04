@@ -116,6 +116,18 @@ export const Chat = () => {
     [hmsActions, messagesCount]
   );
 
+  const chatSelectionHandler = (peerId, selection) => {
+    const role = "";
+
+    setChatOptions({
+      role,
+      peerId,
+      selection,
+    });
+    setPeerSelector(peerId);
+    setRoleSelector(role);
+  };
+
   return (
     <Flex direction="column" css={{ size: "100%" }}>
       <ChatHeader
@@ -143,6 +155,7 @@ export const Chat = () => {
         peerId={chatOptions.peerId}
         ref={listRef}
         scrollToBottom={scrollToBottom}
+        chatSelectionHandler={chatSelectionHandler}
       />
       <ChatFooter
         role={fixedRole ? fixedRole : chatOptions.role}

@@ -7,6 +7,7 @@ import {
   useHMSActions,
   useHMSStore,
   selectAppData,
+  useRecordingStreaming,
 } from "@100mslive/react-sdk";
 import { QuestionIcon, StatsIcon } from "@100mslive/react-icons";
 import { Button, Flex, Input, Switch, Text } from "@100mslive/roomkit-react";
@@ -200,9 +201,40 @@ const AddMenu = () => {
 
 const PrevMenu = () => {
   const canShowPollWidget = useHMSStore(selectAppData("showPollWidget"));
+  const { isHLSRunning } = useRecordingStreaming();
+  const localPeerRole = useHMSStore(selectLocalPeerRoleName);
+  const hlsViewerRoleList = process.env.REACT_APP_HLS_VIEWER_ROLES;
+  const isHLSLiveStreamViewer = hlsViewerRoleList.includes(localPeerRole);
   const polls = useHMSStore(selectPolls)?.filter(
     poll => poll.state === "started" || poll.state === "stopped"
   );
+
+  const renderShowPollAndQuiz = () => {
+    if (isHLSLiveStreamViewer && isHLSRunning) {
+      if (canShowPollWidget) {
+        return polls.map(poll => (
+          <InteractionCard
+            key={poll.id}
+            id={poll.id}
+            title={poll.title}
+            isLive={poll.state === "started"}
+            isTimed={(poll.duration || 0) > 0}
+          />
+        ));
+      }
+    } else {
+      return polls.map(poll => (
+        <InteractionCard
+          key={poll.id}
+          id={poll.id}
+          title={poll.title}
+          isLive={poll.state === "started"}
+          isTimed={(poll.duration || 0) > 0}
+        />
+      ));
+    }
+  };
+
   return polls?.length ? (
     <Flex
       css={{
@@ -216,16 +248,7 @@ const PrevMenu = () => {
           Polls/Quiz
         </Text>
         <Flex direction="column" css={{ gap: "$10", mt: "$8" }}>
-          {canShowPollWidget === true &&
-            polls.map(poll => (
-              <InteractionCard
-                key={poll.id}
-                id={poll.id}
-                title={poll.title}
-                isLive={poll.state === "started"}
-                isTimed={(poll.duration || 0) > 0}
-              />
-            ))}
+          {renderShowPollAndQuiz()}
         </Flex>
       </Flex>
     </Flex>

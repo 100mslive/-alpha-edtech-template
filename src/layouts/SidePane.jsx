@@ -7,6 +7,7 @@ import { ParticipantList } from "../components/Header/ParticipantList";
 import { StreamingLanding } from "../components/Streaming/StreamingLanding";
 import { useWidgetState } from "../components/AppData/useUISettings";
 import { APP_DATA, SIDE_PANE_OPTIONS } from "../common/constants";
+import ResultBoard from "../components/Polls/results/ResultBoard";
 
 const SidePane = ({ css = {} }) => {
   const sidepane = useHMSStore(selectAppData(APP_DATA.sidePane));
@@ -40,6 +41,8 @@ const SidePane = ({ css = {} }) => {
     RightComponent = Chat;
   } else if (sidepane === SIDE_PANE_OPTIONS.STREAMING) {
     RightComponent = StreamingLanding;
+  } else if (sidepane === SIDE_PANE_OPTIONS.RESULTS) {
+    RightComponent = ResultBoard;
   }
 
   return (

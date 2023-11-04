@@ -12,6 +12,7 @@ export const Whiteboard = React.memo(({ roomId }) => {
       showSponsorLink={false}
       showPages={false}
       showMenu={false}
+      showZoom={false}
       {...events}
     />
   );

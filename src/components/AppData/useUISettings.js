@@ -235,7 +235,7 @@ export const useShowWhiteboard = () => {
     FEATURE_LIST.WHITEBOARD
   );
   const whiteboardRolesList =
-    process.env.REACT_APP_SHOW_AUDIO_SHARE_BUTTON_PERMISSION_ROLES;
+    process.env.REACT_APP_WHITEBOARD_BUTTON_PERMISSION_ROLES;
   const localPeerRoleName = useHMSStore(selectLocalPeerRoleName);
   // TODO handle array not present error
   const isRoleAllowedToShareWhiteBoard =
