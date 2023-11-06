@@ -50,12 +50,6 @@ export const getMetadata = metadataString => {
   }
 };
 
-export const metadataProps = function (peer) {
-  return {
-    isHandRaised: getMetadata(peer.metadata)?.isHandRaised,
-  };
-};
-
 export const isScreenshareSupported = () => {
   return typeof navigator.mediaDevices.getDisplayMedia !== "undefined";
 };

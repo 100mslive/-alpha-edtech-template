@@ -10,19 +10,19 @@ export const useMyMetadata = () => {
   const hmsActions = useHMSActions();
   const localPeerId = useHMSStore(selectLocalPeerID);
   const metaData = useHMSStore(selectPeerMetadata(localPeerId));
-  const [isHandRaised, setHandRaised] = useState(
-    metaData?.isHandRaised || false
-  );
+  // const [isHandRaised, setHandRaised] = useState(
+  //   metaData?.isHandRaised || false
+  // );
   const [isBRBOn, setBRBOn] = useState(metaData?.isBRBOn || false); // BRB = be right back
 
   useEffect(() => {
-    if (metaData?.isHandRaised !== isHandRaised) {
-      setHandRaised(metaData?.isHandRaised || false);
-    }
+    // if (metaData?.isHandRaised !== isHandRaised) {
+    //   setHandRaised(metaData?.isHandRaised || false);
+    // }
     if (metaData?.isBRBOn !== isBRBOn) {
       setBRBOn(metaData?.isBRBOn || false);
     }
-  }, [isBRBOn, isHandRaised, metaData]);
+  }, [isBRBOn, metaData]);
   const update = async updatedFields => {
     try {
       await hmsActions.changeMetadata(Object.assign(metaData, updatedFields));
@@ -32,17 +32,17 @@ export const useMyMetadata = () => {
     }
   };
 
-  const toggleHandRaise = useCallback(async () => {
-    const brbUpdate = !isHandRaised ? false : isBRBOn;
-    const success = await update({
-      isHandRaised: !isHandRaised,
-      isBRBOn: brbUpdate,
-    });
-    if (success) {
-      setBRBOn(brbUpdate);
-      setHandRaised(!isHandRaised);
-    }
-  }, [isHandRaised, isBRBOn]); //eslint-disable-line
+  // const toggleHandRaise = useCallback(async () => {
+  //   const brbUpdate = !isHandRaised ? false : isBRBOn;
+  //   const success = await update({
+  //     isHandRaised: !isHandRaised,
+  //     isBRBOn: brbUpdate,
+  //   });
+  //   if (success) {
+  //     setBRBOn(brbUpdate);
+  //     setHandRaised(!isHandRaised);
+  //   }
+  // }, [isHandRaised, isBRBOn]); //eslint-disable-line
 
   const toggleBRB = useCallback(async () => {
     const handRaiseUpdate = !isBRBOn ? false : isHandRaised;
@@ -57,7 +57,7 @@ export const useMyMetadata = () => {
   }, [isHandRaised, isBRBOn]); //eslint-disable-line
 
   return {
-    isHandRaised,
+    // isHandRaised,
     isBRBOn,
     metaData,
     updateMetaData: update,

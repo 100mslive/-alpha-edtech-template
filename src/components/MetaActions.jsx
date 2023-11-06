@@ -2,6 +2,9 @@ import {
   selectIsConnectedToRoom,
   useHMSStore,
   selectLocalPeerRoleName,
+  selectHasPeerHandRaised,
+  selectLocalPeerID,
+  useHMSActions,
 } from "@100mslive/react-sdk";
 import { BrbIcon, HandIcon } from "@100mslive/react-icons";
 import { Flex, Tooltip } from "@100mslive/roomkit-react";
@@ -12,7 +15,10 @@ import { FEATURE_LIST } from "../common/constants";
 
 const MetaActions = ({ isMobile = false, compact = false }) => {
   const isConnected = useHMSStore(selectIsConnectedToRoom);
-  const { isHandRaised, isBRBOn, toggleHandRaise, toggleBRB } = useMyMetadata();
+  const { isBRBOn, toggleBRB } = useMyMetadata();
+  const localPeerId = useHMSStore(selectLocalPeerID);
+  const isHandRaised = useHMSStore(selectHasPeerHandRaised(localPeerId));
+  const hmsActions = useHMSActions();
   const isHandRaiseEnabled = useIsFeatureEnabled(FEATURE_LIST.HAND_RAISE);
   const isBRBEnabled = useIsFeatureEnabled(FEATURE_LIST.BRB);
   const raiseHandButtonRolesList =
@@ -30,7 +36,11 @@ const MetaActions = ({ isMobile = false, compact = false }) => {
       {shouldShowHandRaiseButton === true && isHandRaiseEnabled && (
         <Tooltip title={`${!isHandRaised ? "Raise" : "Unraise"} hand`}>
           <IconButton
-            onClick={toggleHandRaise}
+            onClick={
+              isHandRaised
+                ? hmsActions.lowerLocalPeerHand()
+                : hmsActions.raiseLocalPeerHand()
+            }
             active={!isHandRaised}
             data-testid={isMobile ? "raise_hand_btn_mobile" : "raise_hand_btn"}
           >
