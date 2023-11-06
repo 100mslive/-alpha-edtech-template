@@ -45,16 +45,13 @@ export const useMyMetadata = () => {
   // }, [isHandRaised, isBRBOn]); //eslint-disable-line
 
   const toggleBRB = useCallback(async () => {
-    const handRaiseUpdate = !isBRBOn ? false : isHandRaised;
     const success = await update({
-      isHandRaised: handRaiseUpdate,
       isBRBOn: !isBRBOn,
     });
     if (success) {
       setBRBOn(!isBRBOn);
-      setHandRaised(handRaiseUpdate);
     }
-  }, [isHandRaised, isBRBOn]); //eslint-disable-line
+  }, [isBRBOn]); //eslint-disable-line
 
   return {
     // isHandRaised,
