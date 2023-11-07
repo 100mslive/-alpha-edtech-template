@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-// import { selectHasPeerHandRaised, useHMSStore } from "@100mslive/react-sdk";
+import { selectHasPeerHandRaised, useHMSStore } from "@100mslive/react-sdk";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -23,11 +23,8 @@ export const ParticipantFilter = ({
   roles,
 }) => {
   const [open, setOpen] = useState(false);
-  const selectionValue = selection?.role;
-  // ||
-  // (useHMSStore(selectHasPeerHandRaised(selection?.peerId))
-  //   ? "Raised Hand"
-  //   : "");
+  const isHandRaised = useHMSStore(selectHasPeerHandRaised(selection?.peerId));
+  const selectionValue = selection?.role || isHandRaised ? "Raised Hand" : "";
   const onItemClick = useCallback(value => {
     onSelection(value);
     setOpen(false);
@@ -78,7 +75,7 @@ export const ParticipantFilter = ({
           icon={<PeopleIcon />}
         />
         <Item
-          selected={selection?.metadata?.isHandRaised}
+          selected={isHandRaised}
           title="Raised Hand"
           onSelection={onItemClick}
           icon={<HandRaiseIcon />}
