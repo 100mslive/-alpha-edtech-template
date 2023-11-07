@@ -183,8 +183,7 @@ const metaStyles = { top: "$4", left: "$4" };
 const PeerMetadata = ({ peerId }) => {
   const metaData = useHMSStore(selectPeerMetadata(peerId));
   const localPeerId = useHMSStore(selectLocalPeerID);
-  const isHandRaised =
-    useHMSStore(selectHasPeerHandRaised(localPeerId)) || false;
+  const isHandRaised = useHMSStore(selectHasPeerHandRaised(localPeerId));
   const isBRB = metaData?.isBRBOn || false;
 
   return (

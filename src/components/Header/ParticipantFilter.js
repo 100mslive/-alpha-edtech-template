@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+// import { selectHasPeerHandRaised, useHMSStore } from "@100mslive/react-sdk";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -14,7 +15,6 @@ import {
   textEllipsis,
 } from "@100mslive/roomkit-react";
 import { isInternalRole } from "../../common/utils";
-import { selectHasPeerHandRaised, useHMSStore } from "@100mslive/react-sdk";
 
 export const ParticipantFilter = ({
   selection,
@@ -23,11 +23,11 @@ export const ParticipantFilter = ({
   roles,
 }) => {
   const [open, setOpen] = useState(false);
-  const selectionValue =
-    selection?.role ||
-    (useHMSStore(selectHasPeerHandRaised(selection?.peerId))
-      ? "Raised Hand"
-      : "");
+  const selectionValue = selection?.role;
+  // ||
+  // (useHMSStore(selectHasPeerHandRaised(selection?.peerId))
+  //   ? "Raised Hand"
+  //   : "");
   const onItemClick = useCallback(value => {
     onSelection(value);
     setOpen(false);

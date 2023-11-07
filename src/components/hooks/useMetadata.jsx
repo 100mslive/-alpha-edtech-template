@@ -58,7 +58,7 @@ export const useMyMetadata = () => {
     isBRBOn,
     metaData,
     updateMetaData: update,
-    toggleHandRaise,
+    // toggleHandRaise,
     toggleBRB,
   };
 };
