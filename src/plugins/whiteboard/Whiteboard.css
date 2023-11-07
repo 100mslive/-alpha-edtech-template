@@ -7,6 +7,7 @@
   display: none;
 }
 
-#TD-PrimaryTools-Image {
+#TD-PrimaryTools-Image,
+#TD-MultiplayerMenuIcon {
   display: none;
 }
