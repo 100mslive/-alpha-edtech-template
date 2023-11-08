@@ -1,12 +1,16 @@
-// @ts-check
 import { useEffect, useRef, useState } from "react";
+// import { JoinForm_JoinBtnType } from "@100mslive/types-prebuilt/elements/join_form";
 import {
   selectAvailableRoleNames,
   selectIsConnectedToRoom,
   selectPeerCount,
+  selectPeerMetadata,
+  selectPeers,
+  selectRemotePeers,
   useHMSStore,
+  useHMSVanillaStore,
 } from "@100mslive/react-sdk";
-import { isInternalRole } from "./utils";
+// import { useRoomLayout } from "../provider/roomLayoutProvider";
 
 /**
  * Hook to execute a callback when alone in room(after a certain 5d of time)
@@ -46,8 +50,43 @@ export const useWhenAloneInRoom = (thresholdMs = 5 * 60 * 1000) => {
 };
 
 export const useFilteredRoles = () => {
-  const roles = useHMSStore(selectAvailableRoleNames).filter(
-    role => !isInternalRole(role)
-  );
+  const roles = useHMSStore(selectAvailableRoleNames);
   return roles;
+};
+
+// The search results should not have role name matches
+export const useParticipants = params => {
+  const isConnected = useHMSStore(selectIsConnectedToRoom);
+  const peerCount = useHMSStore(selectPeerCount);
+  const availableRoles = useHMSStore(selectAvailableRoleNames);
+  let participantList = useHMSStore(
+    isConnected ? selectPeers : selectRemotePeers
+  );
+  const rolesWithParticipants = Array.from(
+    new Set(participantList.map(peer => peer.roleName))
+  );
+  const vanillaStore = useHMSVanillaStore();
+  if (params?.metadata?.isHandRaised) {
+    participantList = participantList.filter(peer => {
+      return vanillaStore.getState(selectPeerMetadata(peer.id)).isHandRaised;
+    });
+  }
+  if (params?.role && availableRoles.includes(params.role)) {
+    participantList = participantList.filter(
+      peer => peer.roleName === params.role
+    );
+  }
+  if (params?.search) {
+    const search = params.search;
+    // Removed peer.roleName?.toLowerCase().includes(search)
+    participantList = participantList.filter(peer =>
+      peer.name.toLowerCase().includes(search)
+    );
+  }
+  return {
+    participants: participantList,
+    isConnected,
+    peerCount,
+    rolesWithParticipants,
+  };
 };
