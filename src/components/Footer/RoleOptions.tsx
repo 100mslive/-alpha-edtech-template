@@ -19,7 +19,7 @@ import {
 import { Dropdown } from "../../../Dropdown";
 import { Flex } from "../../../Layout";
 import { Text } from "../../../Text";
-import { useRoomLayoutConferencingScreen } from "../../provider/roomLayoutProvider/hooks/useRoomLayoutScreen";
+import { useRoomLayoutConferencingScreen } from "../../provider/roomLayoutProvider/hooks/useRoomLayoutScreen.ts";
 // @ts-ignore: No implicit Any
 import { getMetadata } from "../../common/utils";
 

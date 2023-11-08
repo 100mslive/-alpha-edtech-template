@@ -3,7 +3,7 @@ import { selectAppData, useHMSStore } from "@100mslive/react-sdk";
 import { Box } from "@100mslive/roomkit-react";
 import { Chat } from "../components/Chat/Chat";
 import { Widgets } from "../components/Footer/Widgets";
-import { ParticipantList } from "../components/Header/ParticipantList";
+import { ParticipantList } from "../components/Footer/ParticipantList";
 import { StreamingLanding } from "../components/Streaming/StreamingLanding";
 import { useWidgetState } from "../components/AppData/useUISettings";
 import { APP_DATA, SIDE_PANE_OPTIONS } from "../common/constants";

@@ -30,12 +30,12 @@ import {
   Input,
   Text,
   textEllipsis,
-} from "../../..";
+} from "@100mslive/roomkit-react";
 import IconButton from "../../IconButton";
 import { ConnectionIndicator } from "../Connection/ConnectionIndicator";
 import { ToastManager } from "../Toast/ToastManager";
 import { RoleAccordion } from "./RoleAccordion";
-import { useRoomLayoutConferencingScreen } from "../../provider/roomLayoutProvider/hooks/useRoomLayoutScreen";
+import { useRoomLayoutConferencingScreen } from "../../provider/roomLayoutProvider/hooks/useRoomLayoutScreen.ts";
 import {
   useIsSidepaneTypeOpen,
   useSidepaneToggle,

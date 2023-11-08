@@ -11,7 +11,7 @@ import {
 } from "@100mslive/react-sdk";
 import { Box, Flex } from "@100mslive/roomkit-react";
 import { ConferenceMainView } from "../layouts/mainView";
-import { Footer } from "./Footer";
+import { Footer } from "../components/Footer/Footer";
 import FullPageProgress from "./FullPageProgress";
 import { Header } from "./Header";
 import { RoleChangeRequestModal } from "./RoleChangeRequestModal";
