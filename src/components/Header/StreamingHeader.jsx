@@ -5,7 +5,7 @@ import { EmojiReaction } from "../EmojiReaction";
 import { LeaveRoom } from "../LeaveRoom";
 import MetaActions from "../MetaActions";
 import { Logo, SpeakerTag } from "./HeaderComponents";
-import { ParticipantCount } from "./ParticipantList";
+import { ParticipantCount } from "../Footer/ParticipantList";
 import { LiveStatus, RecordingStatus, StreamActions } from "./StreamActions";
 
 export const StreamingHeader = ({ isPreview }) => {

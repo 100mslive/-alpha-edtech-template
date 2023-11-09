@@ -27,7 +27,7 @@ import { palette } from "./theme.js";
 import { Confetti } from "./plugins/confetti";
 import { FlyingEmoji } from "./plugins/FlyingEmoji.jsx";
 import { RemoteStopScreenshare } from "./plugins/RemoteStopScreenshare";
-import { getRoutePrefix, shadeColor } from "./common/utils";
+import { getRoutePrefix, shadeColor } from "./common/utils.js";
 import { FeatureFlags } from "./services/FeatureFlags";
 
 const Conference = React.lazy(() => import("./components/conference"));

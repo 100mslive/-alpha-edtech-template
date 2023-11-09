@@ -80,6 +80,15 @@ export const metadataPayloadParser = payload => {
   }
 };
 
+export const getFormattedCount = num => {
+  const formatter = new Intl.NumberFormat("en", {
+    notation: "compact",
+    maximumFractionDigits: 2,
+  });
+  const formattedNum = formatter.format(num);
+  return formattedNum;
+};
+
 export const isValidURL = url => {
   const urlPattern = new RegExp(/^(ftp|http|https):\/\/[^ "]+$/);
   return !!urlPattern.test(url);

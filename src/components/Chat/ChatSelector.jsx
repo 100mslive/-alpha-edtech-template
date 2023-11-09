@@ -17,7 +17,7 @@ import {
   Text,
   Tooltip,
 } from "@100mslive/roomkit-react";
-import { ParticipantSearch } from "../Header/ParticipantList";
+import { ParticipantSearch } from "../Footer/ParticipantList";
 import { useFilteredRoles } from "../../common/hooks";
 
 const ChatDotIcon = () => {

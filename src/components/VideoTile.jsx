@@ -1,6 +1,7 @@
 import React, { Fragment, useCallback, useMemo, useState } from "react";
 import {
   selectAudioTrackByPeerID,
+  selectHasPeerHandRaised,
   selectIsPeerAudioEnabled,
   selectLocalPeerID,
   selectPeerMetadata,
@@ -181,8 +182,8 @@ const metaStyles = { top: "$4", left: "$4" };
 
 const PeerMetadata = ({ peerId }) => {
   const metaData = useHMSStore(selectPeerMetadata(peerId));
-  const isHandRaised = metaData?.isHandRaised || false;
   const isBRB = metaData?.isBRBOn || false;
+  const isHandRaised = useHMSStore(selectHasPeerHandRaised(peerId));
 
   return (
     <Fragment>

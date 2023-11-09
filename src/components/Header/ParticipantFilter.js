@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -13,7 +13,6 @@ import {
   Text,
   textEllipsis,
 } from "@100mslive/roomkit-react";
-import { isInternalRole } from "../../common/utils";
 
 export const ParticipantFilter = ({
   selection,
@@ -64,7 +63,6 @@ export const ParticipantFilter = ({
           maxHeight: "$96",
           boxShadow: "$md",
           w: "$48",
-          backgroundColor: "$surface_dim",
         }}
       >
         <Item
@@ -80,36 +78,31 @@ export const ParticipantFilter = ({
           icon={<HandRaiseIcon />}
           value={{ metadata: { isHandRaised: true }, role: "" }}
         />
-        <Dropdown.ItemSeparator
-          css={{ backgroundColor: "$surface_brighter" }}
-        />
-        {roles
-          .filter(role => !isInternalRole(role))
-          .map(role => (
-            <Item
-              key={role}
-              selected={selectionValue === role}
-              title={role}
-              value={{ metadata: { isHandRaised: false }, role }}
-              onSelection={onItemClick}
-            />
-          ))}
+        <Dropdown.ItemSeparator />
+        {roles.map(role => (
+          <Item
+            key={role}
+            selected={selectionValue === role}
+            title={role}
+            value={{ metadata: { isHandRaised: false }, role }}
+            onSelection={onItemClick}
+          />
+        ))}
       </Dropdown.Content>
     </Dropdown.Root>
   );
 };
 
-const Item = ({ selected, title, onSelection, value, icon = null }) => {
+const Item = ({ selected, title, onSelection, value, icon }) => {
   return (
     <Dropdown.Item
-      css={{ "&:hover": { backgroundColor: "$surface_bright" } }}
       onClick={e => {
         e.preventDefault();
         onSelection(value);
       }}
     >
       <Flex align="center" css={{ flex: "1 1 0" }}>
-        {icon}
+        {icon && <Text>{icon}</Text>}
         <Text css={{ ml: "$4" }}>{title}</Text>
       </Flex>
       {selected && (
