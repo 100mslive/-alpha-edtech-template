@@ -36,7 +36,7 @@ module.exports = {
   performance: false,
   target: "web",
   resolve: {
-    extensions: [".js", ".jsx", ".css", ".svg"],
+    extensions: [".js", ".jsx", ".css", ".svg", ".ts", ".tsx"],
     fallback: {
       path: false,
       fs: false,
@@ -46,6 +46,11 @@ module.exports = {
   ignoreWarnings: [/Failed to parse source map/], // some libraries do not provide proper source maps which throws this warning
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
       {
         test: /\.js$/,
         enforce: "pre",
