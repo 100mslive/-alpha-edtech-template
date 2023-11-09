@@ -262,6 +262,8 @@ function AppRoutes({ getDetails, authTokenByRoomCodeEndpoint }) {
   );
 }
 
+const env = process.env.REACT_APP_ENV || "prod";
+
 export default function App() {
   return (
     <EdtechComponent
@@ -274,6 +276,9 @@ export default function App() {
         headerPresent: process.env.REACT_APP_HEADER_PRESENT,
         metadata: process.env.REACT_APP_DEFAULT_APP_DETAILS, // A stringified object in env
       }}
+      authTokenByRoomCodeEndpoint={
+        env !== "prod" ? "https://auth-nonprod.100ms.live/v2/token" : undefined
+      }
     />
   );
 }
