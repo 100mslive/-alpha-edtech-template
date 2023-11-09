@@ -101,7 +101,6 @@ export function useSessionStore() {
 
   const applyStateToBoard = useCallback(
     state => {
-      console.log("applying", state);
       app === null || app === void 0
         ? void 0
         : app.replacePageContent(
