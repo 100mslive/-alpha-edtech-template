@@ -54,7 +54,9 @@ function keepSelectedShapesInViewport(app) {
  * Ref: https://github.com/tldraw/tldraw/blob/main/apps/www/hooks/useMultiplayerState.ts
  */
 export function useMultiplayerState(roomId) {
-  const [app, setApp] = useState(null);
+  const [app, setApp] = useState(
+    /** @type {import("@tldraw/tldraw").TldrawApp | null} */ (null)
+  );
   const [isReady, setIsReady] = useState(false);
   const { amIWhiteboardOwner, shouldRequestState } = useWhiteboardState();
   const isHeadless = useIsHeadless();
@@ -219,6 +221,7 @@ export function useMultiplayerState(roomId) {
     app => {
       app.loadRoom(roomId);
       app.pause(); // Turn off the app's own undo / redo stack
+      // @ts-ignore
       window.app = app;
       setApp(app);
     },

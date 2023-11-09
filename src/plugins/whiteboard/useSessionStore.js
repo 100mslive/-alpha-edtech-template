@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Utils } from "@tldraw/core";
 import debounce from "lodash.debounce";
 import {
@@ -10,20 +10,37 @@ import {
 import { useIsHeadless } from "../../components/AppData/useUISettings";
 import { useWhiteboardMetadata } from "./useWhiteboardMetadata";
 
+const SHAPE_KEY = "shape";
+const BINDING_KEY = "binding";
+
 const useWhiteboardState = () => {
   const { amIWhiteboardOwner } = useWhiteboardMetadata();
   const sessionStore = useHMSStore(selectSessionStore());
-  const shapes = useMemo(() => {
+  const [shapes, setShapes] = useState({});
+  const [bindings, setBindings] = useState({});
+
+  useEffect(() => {
     if (!sessionStore) return;
-    return Object.keys(sessionStore).reduce((prev, key) => {
+    const newShapes = {};
+    const newBindings = {};
+
+    Object.keys(sessionStore).forEach(key => {
       if (key.startsWith("whiteboard") && !key.endsWith("*")) {
-        prev[key] = sessionStore[key];
+        const type = key.split(".")[1];
+        const id = key.split(".")[2];
+        if (type === SHAPE_KEY) {
+          newShapes[id] = sessionStore[key];
+        } else if (type === BINDING_KEY) {
+          newBindings[id] = sessionStore[key];
+        }
       }
-      return prev;
-    }, {});
+    });
+
+    setShapes(newShapes);
+    setBindings(newBindings);
   }, [sessionStore]);
 
-  return { amIWhiteboardOwner, shapes };
+  return { amIWhiteboardOwner, shapes, bindings };
 };
 
 const isEmptyObject = obj => {
@@ -66,15 +83,15 @@ function keepSelectedShapesInViewport(app) {
  * Ref: https://github.com/tldraw/tldraw/blob/main/apps/www/hooks/useMultiplayerState.ts
  */
 export function useSessionStore() {
-  const [app, setApp] = useState(null);
+  const [app, setApp] = useState(
+    /** @type {import("@tldraw/tldraw").TldrawApp | null} */ (null)
+  );
   const hmsActions = useHMSActions();
-  const { amIWhiteboardOwner, shapes } = useWhiteboardState();
+  const { amIWhiteboardOwner, shapes, bindings } = useWhiteboardState();
   const isHeadless = useIsHeadless();
   /**
    * Stores current state(shapes, bindings, [assets]) of the whiteboard
    */
-  const rLiveShapes = useRef(new Map());
-  const rLiveBindings = useRef(new Map());
 
   const zoomToFit = useCallback(() => {
     if (!app) return;
@@ -82,50 +99,9 @@ export function useSessionStore() {
     app.zoomToFit();
   }, [app]);
 
-  const getCurrentState = useCallback(() => {
-    return {
-      shapes: rLiveShapes.current
-        ? Object.fromEntries(rLiveShapes.current)
-        : {},
-      bindings: rLiveBindings.current
-        ? Object.fromEntries(rLiveBindings.current)
-        : {},
-    };
-  }, []);
-
-  const updateLocalState = useCallback(({ shapes, bindings, merge = true }) => {
-    if (!(shapes && bindings)) {
-      return;
-    }
-
-    if (merge) {
-      const lShapes = rLiveShapes.current;
-      const lBindings = rLiveBindings.current;
-
-      if (!(lShapes && lBindings)) return;
-      Object.entries(shapes).forEach(([id, shape]) => {
-        if (!shape) {
-          lShapes.delete(id);
-        } else {
-          lShapes.set(shape.id, shape);
-        }
-      });
-
-      Object.entries(bindings).forEach(([id, binding]) => {
-        if (!binding) {
-          lBindings.delete(id);
-        } else {
-          lBindings.set(binding.id, binding);
-        }
-      });
-    } else {
-      rLiveShapes.current = new Map(Object.entries(shapes));
-      rLiveBindings.current = new Map(Object.entries(bindings));
-    }
-  }, []);
-
   const applyStateToBoard = useCallback(
     state => {
+      console.log("applying", state);
       app === null || app === void 0
         ? void 0
         : app.replacePageContent(
@@ -142,33 +118,21 @@ export function useSessionStore() {
       if (!state) {
         return;
       }
-      const { shapes, bindings } = state;
-      console.log(shapes);
-      updateLocalState({
-        shapes,
-        bindings,
-        merge: true,
-      });
-      applyStateToBoard(getCurrentState());
+
+      applyStateToBoard(state);
 
       if (!amIWhiteboardOwner && isHeadless) {
         zoomToFit();
       }
     },
-    [
-      applyStateToBoard,
-      getCurrentState,
-      updateLocalState,
-      amIWhiteboardOwner,
-      isHeadless,
-      zoomToFit,
-    ]
+    [applyStateToBoard, amIWhiteboardOwner, isHeadless, zoomToFit]
   );
 
   // Callbacks --------------
   // Put the state into the window, for debugging.
   const onMount = useCallback(app => {
     app.pause(); // Turn off the app's own undo / redo stack
+    // @ts-ignore
     window.app = app;
     setApp(app);
   }, []);
@@ -180,10 +144,18 @@ export function useSessionStore() {
       if (isEmptyObject(shapes) && isEmptyObject(bindings)) return;
 
       Object.values(shapes).forEach(shape => {
-        hmsActions.sessionStore.set(`whiteboard.${shape.id}`, shape);
+        hmsActions.sessionStore.set(
+          `whiteboard.${SHAPE_KEY}.${shape.id}`,
+          shape
+        );
       });
 
-      updateLocalState({ shapes, bindings });
+      Object.values(bindings).forEach(binding => {
+        hmsActions.sessionStore.set(
+          `whiteboard.${BINDING_KEY}.${binding.id}`,
+          binding
+        );
+      });
 
       /**
        * Tldraw thinks that the next update passed to replacePageContent after onChangePage is the own update triggered by onChangePage
@@ -193,14 +165,9 @@ export function useSessionStore() {
        *
        * Refer: https://github.com/tldraw/tldraw/blob/main/packages/tldraw/src/state/TldrawApp.ts#L684
        */
-      applyStateToBoard(getCurrentState());
+      // applyStateToBoard(getCurrentState());
     }, 300),
-    [
-      updateLocalState,
-      applyStateToBoard,
-      getCurrentState,
-      hmsActions.sessionStore,
-    ]
+    [hmsActions.sessionStore]
   );
 
   const onChange = useCallback(
@@ -217,8 +184,8 @@ export function useSessionStore() {
   );
 
   useEffect(() => {
-    handleChanges({ shapes });
-  }, [shapes, handleChanges]);
+    handleChanges({ shapes, bindings });
+  }, [shapes, bindings, handleChanges]);
 
   // Subscriptions and initial setup
   useEffect(() => {
