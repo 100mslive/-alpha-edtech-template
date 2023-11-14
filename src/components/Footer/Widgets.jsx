@@ -1,5 +1,10 @@
 // @ts-check
 import React from "react";
+import {
+  selectLocalPeerRoleName,
+  useHMSStore,
+  useRecordingStreaming,
+} from "@100mslive/react-sdk";
 import { QuizIcon } from "@100mslive/react-icons";
 import { Button, Flex, Text } from "@100mslive/roomkit-react";
 import { PollsQuizMenu } from "../Polls/CreatePollQuiz/PollsQuizMenu";
@@ -16,11 +21,6 @@ import {
   useWidgetState,
 } from "../AppData/useUISettings";
 import { WIDGET_STATE, WIDGET_VIEWS } from "../../common/constants";
-import {
-  useHMSStore,
-  useRecordingStreaming,
-  selectLocalPeerRoleName,
-} from "@100mslive/react-sdk";
 
 export const Widgets = props => {
   const toggleWidget = useWidgetToggle();

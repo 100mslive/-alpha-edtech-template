@@ -14,7 +14,7 @@ export const WidgetCard = ({
       css={{
         cursor: "pointer",
         flex: "1 1 0",
-        minWidth:0,
+        minWidth: 0,
         "&:hover": { opacity: 0.7, r: "$0" },
         ...css,
       }}
@@ -25,7 +25,7 @@ export const WidgetCard = ({
         <img
           src={imageSrc}
           alt={`${imageSrc}-polls`}
-          style={{ borderRadius: "4px" , maxWidth:"100%"}}
+          style={{ borderRadius: "4px", maxWidth: "100%" }}
         />
       </Flex>
       <Text variant="sub2" css={{ mt: "$md", c: "$on_surface_high" }}>
