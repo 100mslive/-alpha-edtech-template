@@ -28,10 +28,14 @@ const useWhiteboardState = () => {
       if (key.startsWith("whiteboard") && !key.endsWith("*")) {
         const type = key.split(".")[1];
         const id = key.split(".")[2];
+        const value = sessionStore[key];
+        if (!value) {
+          return;
+        }
         if (type === SHAPE_KEY) {
-          newShapes[id] = sessionStore[key];
+          newShapes[id] = value;
         } else if (type === BINDING_KEY) {
-          newBindings[id] = sessionStore[key];
+          newBindings[id] = value;
         }
       }
     });
@@ -142,17 +146,17 @@ export function useSessionStore() {
     debounce((_app, shapes, bindings, _assets) => {
       if (isEmptyObject(shapes) && isEmptyObject(bindings)) return;
 
-      Object.values(shapes).forEach(shape => {
+      Object.keys(shapes).forEach(shapeId => {
         hmsActions.sessionStore.set(
-          `whiteboard.${SHAPE_KEY}.${shape.id}`,
-          shape
+          `whiteboard.${SHAPE_KEY}.${shapeId}`,
+          shapes[shapeId]
         );
       });
 
-      Object.values(bindings).forEach(binding => {
+      Object.keys(bindings).forEach(bindingId => {
         hmsActions.sessionStore.set(
-          `whiteboard.${BINDING_KEY}.${binding.id}`,
-          binding
+          `whiteboard.${BINDING_KEY}.${bindingId}`,
+          bindings[bindingId]
         );
       });
 
